@@ -1,0 +1,29 @@
+<?php
+
+/*
+ * This file is part of fof/ignore-users.
+ *
+ * Copyright (c) 2019 FriendsOfFlarum.
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
+use Flarum\Extend;
+use FoF\IgnoreUsers\Listener;
+use Flarum\Event\ConfigureUserGambits;
+use Illuminate\Contracts\Events\Dispatcher;
+use Flarum\User\Event\Saving;
+
+return [
+    new Extend\Locales(__DIR__.'/locale'),
+
+    (new Extend\Frontend('forum'))
+        ->js(__DIR__.'/js/dist/forum.js'),
+
+    function (Dispatcher $events) {
+        $events->subscribe(Listener\AddIgnoredUsersRelationship::class);
+        $events->listen(ConfigureUserGambits::class, Listener\AddIgnoredUserGambit::class);
+        $events->listen(Saving::class, Listener\SaveIgnoredToDatabase::class);
+    },
+];
