@@ -53,7 +53,6 @@ class AddIgnoredUsersRelationship
     public function prepareApiData(WillSerializeData $event)
     {
         if ($event->isController(Controller\ListUsersController::class) || $event->isController(Controller\ShowUserController::class)) {
-            $users = $event->data->all();
             $actor = $event->request->getAttribute('actor');
             $actor->load('ignoredUsers');
         }
@@ -65,7 +64,8 @@ class AddIgnoredUsersRelationship
     public function prepareApiAttributes(Serializing $event)
     {
         if ($event->isSerializer(UserSerializer::class)) {
-            $event->attributes['ignored'] = $event->actor->ignoredUsers->contains($event->model);
+            $canIgnored = !$event->model->can('notBeIgnored');
+            $event->attributes['ignored'] = $canIgnored && $event->actor->ignoredUsers->contains($event->model);
         }
     }
 }
