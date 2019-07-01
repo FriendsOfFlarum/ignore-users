@@ -11,12 +11,16 @@
 
 use Flarum\Extend;
 use FoF\IgnoreUsers\Listener;
+use FoF\IgnoreUsers\Access;
 use Flarum\Event\ConfigureUserGambits;
 use Illuminate\Contracts\Events\Dispatcher;
 use Flarum\User\Event\Saving;
 
 return [
     new Extend\Locales(__DIR__.'/locale'),
+
+    (new Extend\Frontend('admin'))
+        ->js(__DIR__.'/js/dist/admin.js'),
 
     (new Extend\Frontend('forum'))
         ->js(__DIR__.'/js/dist/forum.js'),
@@ -25,5 +29,7 @@ return [
         $events->subscribe(Listener\AddIgnoredUsersRelationship::class);
         $events->listen(ConfigureUserGambits::class, Listener\AddIgnoredUserGambit::class);
         $events->listen(Saving::class, Listener\SaveIgnoredToDatabase::class);
+
+        $events->subscribe(Access\UserPolicy::class);
     },
 ];

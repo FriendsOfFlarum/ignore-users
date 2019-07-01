@@ -43,14 +43,7 @@ class SaveIgnoredToDatabase
             $user = $event->user;
             $actor = $event->actor;
 
-            if ($user->id === $actor->id) {
-                return;
-            }
-
-            /*
-              // TODO check if user allowed to be ignored.
-              $this->assertCan($actor, 'ignore', $user);
-            */
+            $this->assertCan($actor, 'ignore', $user);
 
             $ignored = !!$attributes['ignored'];
             $changed = false;

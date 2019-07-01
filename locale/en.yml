@@ -4,6 +4,12 @@ fof-ignore-users:
   # UNIQUE KEYS - The following keys are used in only one location each.
   ##
 
+  # Translations in this namespace are used by the admin interface.
+  admin:
+    permissions:
+      can_not_be_ignored_label: Not be ignored
+
+
   # Translations in this namespace are used by the forum interface.
   forum:
 
