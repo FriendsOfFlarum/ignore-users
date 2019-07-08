@@ -18,12 +18,12 @@ use Flarum\Search\AbstractSearch;
 use Flarum\User\Search\UserSearch;
 use LogicException;
 
-class IgnoredGambit extends AbstractRegexGambit
+class ByobuGambit extends AbstractRegexGambit
 {
     /**
      * {@inheritdoc}
      */
-    protected $pattern = 'is:ignor(?:ing|ed)';
+    protected $pattern = 'byobu-extend';
 
     /**
      * {@inheritdoc}
@@ -36,15 +36,8 @@ class IgnoredGambit extends AbstractRegexGambit
 
         $actor = $search->getActor();
 
-        $method = $negate ? 'whereNotExists' : 'whereExists';
+        $ids = $actor->ignoredBy()->pluck('id')->all();
 
-        $search->getQuery()->$method(
-            function ($query) use ($actor) {
-                $query->selectRaw('1')
-                    ->from('ignored_user')
-                    ->whereColumn('users.id', 'ignored_user_id')
-                    ->where('user_id', $actor->id);
-            }
-        );
+        $search->getQuery()->whereNotIn('id', $ids);
     }
 }

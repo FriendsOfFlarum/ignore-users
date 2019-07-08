@@ -10,6 +10,7 @@
  */
 
 use Flarum\Extend;
+use FoF\Byobu\Events\DiscussionMadePrivate;
 use FoF\IgnoreUsers\Listener;
 use FoF\IgnoreUsers\Access;
 use Flarum\Event\ConfigureUserGambits;
@@ -30,6 +31,7 @@ return [
         $events->listen(ConfigureUserGambits::class, Listener\AddIgnoredUserGambit::class);
         $events->listen(Saving::class, Listener\SaveIgnoredToDatabase::class);
 
+        $events->subscribe(Listener\AddByobuDMPrevention::class);
         $events->subscribe(Access\UserPolicy::class);
     },
 ];
