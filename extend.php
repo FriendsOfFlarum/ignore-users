@@ -33,5 +33,6 @@ return [
 
         $events->subscribe(Listener\AddByobuDMPrevention::class);
         $events->subscribe(Access\UserPolicy::class);
+        $events->subscribe(Access\ByobuPolicy::class);
     },
 ];
