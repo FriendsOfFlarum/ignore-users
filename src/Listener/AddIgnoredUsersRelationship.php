@@ -16,6 +16,7 @@ namespace FoF\IgnoreUsers\Listener;
 use Flarum\Api\Controller;
 use Flarum\Api\Event\WillSerializeData;
 use Flarum\Api\Event\Serializing;
+use Flarum\Api\Serializer\CurrentUserSerializer;
 use Flarum\Api\Serializer\ForumSerializer;
 use Flarum\Api\Serializer\UserSerializer;
 use Flarum\Event\GetModelRelationship;
@@ -24,6 +25,7 @@ use Illuminate\Contracts\Events\Dispatcher;
 
 class AddIgnoredUsersRelationship
 {
+
     /**
      * @param Dispatcher $events
      */
@@ -75,6 +77,15 @@ class AddIgnoredUsersRelationship
 
         if ($event->isSerializer(ForumSerializer::class)) {
             $event->attributes['byobu-extend'] = true;
+        }
+
+        if ($event->isSerializer(UserSerializer::class)) {
+            $users = [];
+            $ignoredUsers = $event->actor->ignoredUsers->all();
+            foreach ($ignoredUsers as $user) {
+                array_push($users, User::find($user->id));
+            }
+            $event->attributes['ignoredUsers'] = $users;
         }
     }
 }

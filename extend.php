@@ -10,7 +10,6 @@
  */
 
 use Flarum\Extend;
-use FoF\Byobu\Events\DiscussionMadePrivate;
 use FoF\IgnoreUsers\Listener;
 use FoF\IgnoreUsers\Access;
 use Flarum\Event\ConfigureUserGambits;
@@ -24,7 +23,8 @@ return [
         ->js(__DIR__.'/js/dist/admin.js'),
 
     (new Extend\Frontend('forum'))
-        ->js(__DIR__.'/js/dist/forum.js'),
+        ->js(__DIR__.'/js/dist/forum.js')
+        ->route('/ignoredUsers', 'ignored.users.view'),
 
     function (Dispatcher $events) {
         $events->subscribe(Listener\AddIgnoredUsersRelationship::class);

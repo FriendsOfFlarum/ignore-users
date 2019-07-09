@@ -14,14 +14,12 @@
 namespace Fof\IgnoreUsers\Listener;
 
 use Flarum\Event\ConfigureUserGambits;
-use FoF\IgnoreUsers\User\Search\Gambit\ByobuGambit;
 use FoF\IgnoreUsers\User\Search\Gambit\IgnoredGambit;
 
 class AddIgnoredUserGambit
 {
     public function handle(ConfigureUserGambits $event)
     {
-        $event->gambits->add(ByobuGambit::class);
         $event->gambits->add(IgnoredGambit::class);
     }
 }
