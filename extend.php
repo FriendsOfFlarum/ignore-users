@@ -17,13 +17,14 @@ use Illuminate\Contracts\Events\Dispatcher;
 use Flarum\User\Event\Saving;
 
 return [
-    new Extend\Locales(__DIR__.'/locale'),
+    new Extend\Locales(__DIR__.'/resources/locale'),
 
     (new Extend\Frontend('admin'))
         ->js(__DIR__.'/js/dist/admin.js'),
 
     (new Extend\Frontend('forum'))
         ->js(__DIR__.'/js/dist/forum.js')
+        ->css(__DIR__.'/resources/less/forum.less')
         ->route('/ignoredUsers', 'ignored.users.view'),
 
     function (Dispatcher $events) {
