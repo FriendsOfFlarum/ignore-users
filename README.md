@@ -2,7 +2,7 @@
 
 ![License](https://img.shields.io/badge/license-MIT-blue.svg) [![Latest Stable Version](https://img.shields.io/packagist/v/fof/ignore-users.svg)](https://packagist.org/packages/fof/ignore-users)
 
-A [Flarum](http://flarum.org) extension. Ignore users - hiding their posts in discussions and preventing Byobu direct messages.
+A [Flarum](http://flarum.org) extension. Ignore users - hiding their posts in discussion and preventing Byobu direct messages.
 
 ### Installation
 
