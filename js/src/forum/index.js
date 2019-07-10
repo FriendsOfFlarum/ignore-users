@@ -7,7 +7,7 @@ import ProfilePage from './components/ProfilePage';
 
 app.initializers.add('fof-ignore-users', function(app) {
   User.prototype.ignored = Model.attribute('ignored');
-  User.prototype.ignoredUsers = Model.attribute('ignoredUsers');
+  User.prototype.ignoredUsers = Model.hasMany('ignoredUsers');
 
   app.routes.ignoredUsers = {path: '/ignoredUsers', component: ProfilePage.component()};
 

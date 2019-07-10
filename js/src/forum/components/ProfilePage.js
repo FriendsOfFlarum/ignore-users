@@ -10,6 +10,7 @@
  */
 
 import avatar from 'flarum/helpers/avatar';
+import Button from 'flarum/components/Button';
 import username from 'flarum/helpers/username';
 import UserPage from 'flarum/components/UserPage';
 
@@ -19,19 +20,43 @@ export default class ProfilePage extends UserPage {
 
         this.loading = true;
 
+        this.ignoredUsers = app.session.user.ignoredUsers();
+
         this.loadUser(app.session.user.username())
     }
 
     content() {
         return (
-            app.session.user.ignoredUsers().map(user => {
-                console.log(user);
-                return (
-                    <div className="PostUser">
-                        <h3>{avatar(user, {className: 'PostUser-avatar'})} {username(user)}</h3>
-                    </div>
-                )
-            })
+            <table className="NotificationGrid">
+                {this.ignoredUsers.map((user, i) => {
+                    var unignore = () => {
+                        if (confirm(app.translator.trans(`fof-ignore-users.forum.user_controls.unignore_confirmation`))) {
+                            user.save({ignored: false});
+                            this.ignoredUsers.splice(i, 1);
+                            app.session.user.ignoredUsers = m.prop(this.ignoredUsers)
+                        }
+                    }
+
+                    return (
+                        <tr>
+                            <td>
+                                <a href={app.route.user(user)} config={m.route}>
+                                    <h3>{avatar(user, {className: 'ignorePage-avatar'})} {username(user)}</h3>
+                                </a>
+                            </td>
+                            <td className="ignorePage-button">
+                                {Button.component({
+                                    icon: 'fas fa-comment',
+                                    type: 'button',
+                                    className: 'Button Button--warning',
+                                    children: app.translator.trans('fof-ignore-users.forum.user_controls.unignore_button'),
+                                    onclick: unignore.bind(user),
+                                })}
+                            </td>
+                        </tr>
+                    )
+                })}
+            </table>
         )
     }
 

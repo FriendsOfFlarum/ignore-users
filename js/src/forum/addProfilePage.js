@@ -16,7 +16,6 @@ import UserPage from 'flarum/components/UserPage';
 
 export default function () {
     extend(UserPage.prototype, 'navItems', function (items) {
-        console.log(this.user)
         if (app.session.user && app.session.user === this.user)
         items.add('ignored-users',
             LinkButton.component({

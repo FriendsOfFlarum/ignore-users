@@ -14,11 +14,13 @@
 namespace FoF\IgnoreUsers\Listener;
 
 use Flarum\Api\Controller;
-use Flarum\Api\Event\WillSerializeData;
 use Flarum\Api\Event\Serializing;
+use Flarum\Api\Event\WillGetData;
+use Flarum\Api\Event\WillSerializeData;
 use Flarum\Api\Serializer\CurrentUserSerializer;
 use Flarum\Api\Serializer\ForumSerializer;
 use Flarum\Api\Serializer\UserSerializer;
+use Flarum\Event\GetApiRelationship;
 use Flarum\Event\GetModelRelationship;
 use Flarum\User\User;
 use Illuminate\Contracts\Events\Dispatcher;
@@ -34,7 +36,20 @@ class AddIgnoredUsersRelationship
         // TODO need to configure ignored_at via ConfigureModelDates?
         $events->listen(GetModelRelationship::class, [$this, 'getModelRelationship']);
         $events->listen(WillSerializeData::class, [$this, 'prepareApiData']);
+        $events->listen(GetApiRelationship::class, [$this, 'getApiRelationship']);
+        $events->listen(WillGetData::class, [$this, 'includeRequestsRelationship']);
         $events->listen(Serializing::class, [$this, 'prepareApiAttributes']);
+    }
+
+    /**
+     * @param GetApiRelationship $event
+     * @return \Tobscure\JsonApi\Relationship|null
+     */
+    public function getApiRelationship(GetApiRelationship $event)
+    {
+        if ($event->isRelationship(CurrentUserSerializer::class, 'ignoredUsers')) {
+            return $event->serializer->hasMany($event->model, UserSerializer::class, 'ignoredUsers');
+        }
     }
 
     /**
@@ -66,6 +81,18 @@ class AddIgnoredUsersRelationship
     }
 
     /**
+     * @param WillGetData $event
+     */
+    public function includeRequestsRelationship(WillGetData $event)
+    {
+
+        if ($event->isController(Controller\ListUsersController::class)
+            || $event->isController(Controller\ShowUserController::class)) {
+            $event->addInclude('ignoredUsers');
+        }
+    }
+
+    /**
      * @param Serializing $event
      */
     public function prepareApiAttributes(Serializing $event)
@@ -77,15 +104,6 @@ class AddIgnoredUsersRelationship
 
         if ($event->isSerializer(ForumSerializer::class)) {
             $event->attributes['byobu-extend'] = true;
-        }
-
-        if ($event->isSerializer(UserSerializer::class)) {
-            $users = [];
-            $ignoredUsers = $event->actor->ignoredUsers->all();
-            foreach ($ignoredUsers as $user) {
-                array_push($users, User::find($user->id));
-            }
-            $event->attributes['ignoredUsers'] = $users;
         }
     }
 }
