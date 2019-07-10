@@ -1,33 +1,36 @@
 {
-  "name": "fof/ignore-users",
-  "description": "Lets users to ignore other users.",
-  "keywords": [
-    "flarum"
-  ],
-  "type": "flarum-extension",
-  "license": "MIT",
-  "require": {
-    "flarum/core": "^0.1.0-beta.8"
-  },
-  "authors": [
-    {
-      "name": "Sajjad Hashemian",
-      "email": "wolaws@gmail.com"
+    "name": "fof/ignore-users",
+    "description": "Lets users to ignore other users.",
+    "keywords": [
+        "flarum"
+    ],
+    "type": "flarum-extension",
+    "license": "MIT",
+    "require": {
+        "flarum/core": "^0.1.0-beta.8"
+    },
+    "authors": [
+        {
+            "name": "Sajjad Hashemian",
+            "email": "wolaws@gmail.com"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "FoF\\IgnoreUsers\\": "src/"
+        }
+    },
+    "extra": {
+        "flarum-extension": {
+            "title": "FoF Ignore Users",
+            "icon": {
+                "name": "fas fa-comment-slash",
+                "backgroundColor": "#ad343e",
+                "color": "#fff"
+            }
+        },
+        "flagrow": {
+            "discuss": "https://discuss.flarum.org/d/20681-friendsofflarum-ignore-users"
+        }
     }
-  ],
-  "autoload": {
-    "psr-4": {
-      "FoF\\IgnoreUsers\\": "src/"
-    }
-  },
-  "extra": {
-    "flarum-extension": {
-      "title": "Ignore Users",
-      "icon": {
-        "name": "fas fa-comment-slash",
-        "backgroundColor": "#ad343e",
-        "color": "#fff"
-      }
-    }
-  }
 }
