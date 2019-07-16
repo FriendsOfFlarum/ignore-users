@@ -13,6 +13,8 @@ fof-ignore-users:
   # Translations in this namespace are used by the forum interface.
   forum:
 
+    profile_link: Ignored Users
+
     # These strings are used in the User Controls menu.
     user_controls:
       ignore_button: Ignore
