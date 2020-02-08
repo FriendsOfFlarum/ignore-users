@@ -33,5 +33,6 @@ class UserPolicy extends AbstractPolicy
         if ($user->can('notBeIgnored') || $user->id === $actor->id) {
             return false;
         }
+        return true;
     }
 }
