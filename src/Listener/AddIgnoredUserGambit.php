@@ -11,7 +11,7 @@
  *
  */
 
-namespace Fof\IgnoreUsers\Listener;
+namespace FoF\IgnoreUsers\Listener;
 
 use Flarum\Event\ConfigureUserGambits;
 use FoF\IgnoreUsers\User\Search\Gambit\IgnoredGambit;

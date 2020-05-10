@@ -10,7 +10,7 @@
  *
  */
 
-namespace Fof\IgnoreUsers\Listener;
+namespace FoF\IgnoreUsers\Listener;
 
 use Flarum\User\Exception\PermissionDeniedException;
 use Flarum\User\UserRepository;
