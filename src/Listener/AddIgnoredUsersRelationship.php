@@ -34,7 +34,6 @@ class AddIgnoredUsersRelationship
     public function subscribe(Dispatcher $events)
     {
         // TODO need to configure ignored_at via ConfigureModelDates?
-        $events->listen(GetModelRelationship::class, [$this, 'getModelRelationship']);
         $events->listen(WillSerializeData::class, [$this, 'prepareApiData']);
         $events->listen(GetApiRelationship::class, [$this, 'getApiRelationship']);
         $events->listen(WillGetData::class, [$this, 'includeRequestsRelationship']);
@@ -49,23 +48,6 @@ class AddIgnoredUsersRelationship
     {
         if ($event->isRelationship(CurrentUserSerializer::class, 'ignoredUsers')) {
             return $event->serializer->hasMany($event->model, UserSerializer::class, 'ignoredUsers');
-        }
-    }
-
-    /**
-     * @param GetModelRelationship $event
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
-     */
-    public function getModelRelationship(GetModelRelationship $event)
-    {
-        if ($event->isRelationship(User::class, 'ignoredUsers')) {
-            return $event->model->belongsToMany(User::class, 'ignored_user', 'user_id', 'ignored_user_id')
-                ->withPivot('ignored_at');
-        }
-
-        if ($event->isRelationship(User::class, 'ignoredBy')) {
-            return $event->model->belongsToMany(User::class, 'ignored_user', 'ignored_user_id', 'user_id')
-                ->withPivot('ignored_at');
         }
     }
 
