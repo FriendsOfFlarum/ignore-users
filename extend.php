@@ -9,12 +9,14 @@
  * file that was distributed with this source code.
  */
 
+use Flarum\Database\AbstractModel;
 use Flarum\Extend;
 use FoF\IgnoreUsers\Listener;
 use FoF\IgnoreUsers\Access;
 use Flarum\Event\ConfigureUserGambits;
 use Illuminate\Contracts\Events\Dispatcher;
 use Flarum\User\Event\Saving;
+use Flarum\User\User;
 
 return [
     new Extend\Locales(__DIR__.'/resources/locale'),
@@ -26,6 +28,16 @@ return [
         ->js(__DIR__.'/js/dist/forum.js')
         ->css(__DIR__.'/resources/less/forum.less')
         ->route('/ignoredUsers', 'ignored.users.view'),
+
+    (new Extend\Model(User::class))
+        ->relationship('ignoredUsers', function (AbstractModel $model) {
+          return $model->belongsToMany(User::class, 'ignored_user', 'user_id', 'ignored_user_id')
+            ->withPivot('ignored_at');
+        })
+        ->relationship('ignoredBy', function (AbstractModel $model) {
+          return $model->belongsToMany(User::class, 'ignored_user', 'ignored_user_id', 'user_id')
+            ->withPivot('ignored_at');
+        }),
 
     function (Dispatcher $events) {
         $events->subscribe(Listener\AddIgnoredUsersRelationship::class);

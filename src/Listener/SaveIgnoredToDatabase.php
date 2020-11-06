@@ -19,6 +19,7 @@ use Flarum\User\Event\Saving;
 use FoF\IgnoreUsers\Event\Ignoring;
 use FoF\IgnoreUsers\Event\Unignoring;
 use Illuminate\Contracts\Events\Dispatcher;
+use Illuminate\Support\Arr;
 
 class SaveIgnoredToDatabase
 {
@@ -39,7 +40,7 @@ class SaveIgnoredToDatabase
 
     public function handle(Saving $event)
     {
-        $attributes = array_get($event->data, 'attributes', []);
+        $attributes = Arr::get($event->data, 'attributes', []);
 
         if (array_key_exists('ignored', $attributes)) {
             $user = $event->user;
