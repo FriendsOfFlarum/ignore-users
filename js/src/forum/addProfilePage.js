@@ -20,9 +20,8 @@ export default function () {
         items.add('ignored-users',
             LinkButton.component({
                 href: app.route('ignoredUsers'),
-                children: app.translator.trans('fof-ignore-users.forum.profile_link'),
                 icon: 'fas fa-user-slash',
-            }),
+            }, app.translator.trans('fof-ignore-users.forum.profile_link')),
         );
     });
 }

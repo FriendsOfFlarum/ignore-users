@@ -14,7 +14,6 @@
 namespace FoF\IgnoreUsers\Listener;
 
 use Carbon\Carbon;
-use Flarum\User\AssertPermissionTrait;
 use Flarum\User\Event\Saving;
 use FoF\IgnoreUsers\Event\Ignoring;
 use FoF\IgnoreUsers\Event\Unignoring;
@@ -23,8 +22,6 @@ use Illuminate\Support\Arr;
 
 class SaveIgnoredToDatabase
 {
-    use AssertPermissionTrait;
-
     /**
      * @var Dispatcher
      */
@@ -46,7 +43,7 @@ class SaveIgnoredToDatabase
             $user = $event->user;
             $actor = $event->actor;
 
-            $this->assertCan($actor, 'ignore', $user);
+            $actor->assertCan('ignore', $user);
 
             $ignored = !!$attributes['ignored'];
             $changed = false;

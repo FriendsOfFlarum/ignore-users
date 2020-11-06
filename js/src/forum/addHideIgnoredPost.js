@@ -4,17 +4,17 @@ import CommentPost from 'flarum/components/CommentPost';
 import Button from 'flarum/components/Button';
 
 export default function() {
-  extend(CommentPost.prototype, 'attrs', function(attrs) {
-    const user = this.props.post.user();
+  extend(CommentPost.prototype, 'elementAttrs', function(elementAttrs) {
+    const user = this.attrs.post.user();
     const ignored = user && user.ignored();
     if (ignored) {
-      attrs.className += ' Post--hidden';
+      elementAttrs.className += ' Post--hidden';
     }
-    return attrs;
+    return elementAttrs;
   });
 
   extend(CommentPost.prototype, 'headerItems', function(items) {
-    const post = this.props.post;
+    const post = this.attrs.post;
 
     if (post.isHidden() || !(post.user() && post.user().ignored())) {
       return;

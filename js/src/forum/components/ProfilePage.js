@@ -13,10 +13,11 @@ import avatar from 'flarum/helpers/avatar';
 import Button from 'flarum/components/Button';
 import username from 'flarum/helpers/username';
 import UserPage from 'flarum/components/UserPage';
+import Stream from 'flarum/utils/Stream';
 
 export default class ProfilePage extends UserPage {
-    init() {
-        super.init();
+    oninit(vdom) {
+        super.oninit(vdom);
 
         this.loading = true;
 
@@ -33,7 +34,7 @@ export default class ProfilePage extends UserPage {
                         if (confirm(app.translator.trans(`fof-ignore-users.forum.user_controls.unignore_confirmation`))) {
                             user.save({ignored: false});
                             this.ignoredUsers.splice(i, 1);
-                            app.session.user.ignoredUsers = m.prop(this.ignoredUsers)
+                            app.session.user.ignoredUsers = Stream(this.ignoredUsers)
                         }
                     }
 
@@ -49,9 +50,8 @@ export default class ProfilePage extends UserPage {
                                     icon: 'fas fa-comment',
                                     type: 'button',
                                     className: 'Button Button--warning',
-                                    children: app.translator.trans('fof-ignore-users.forum.user_controls.unignore_button'),
                                     onclick: unignore.bind(user),
-                                })}
+                                }, app.translator.trans('fof-ignore-users.forum.user_controls.unignore_button'))}
                             </td>
                         </tr>
                     )

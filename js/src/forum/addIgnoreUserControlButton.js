@@ -23,15 +23,13 @@ export default function() {
     if (user.ignored()) {
       items.add('unignore', Button.component({
         icon: 'fas fa-comment',
-        children: app.translator.trans('fof-ignore-users.forum.user_controls.unignore_button'),
         onclick: unignore.bind(user),
-      }));
+      }, app.translator.trans('fof-ignore-users.forum.user_controls.unignore_button')));
     } else {
       items.add('ignore', Button.component({
         icon: 'fas fa-comment-slash',
-        children: app.translator.trans('fof-ignore-users.forum.user_controls.ignore_button'),
         onclick: ignore.bind(user),
-      }));
+      }, app.translator.trans('fof-ignore-users.forum.user_controls.ignore_button')));
     }
   });
 }

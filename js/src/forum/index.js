@@ -9,7 +9,7 @@ app.initializers.add('fof-ignore-users', function(app) {
   User.prototype.ignored = Model.attribute('ignored');
   User.prototype.ignoredUsers = Model.hasMany('ignoredUsers');
 
-  app.routes.ignoredUsers = {path: '/ignoredUsers', component: ProfilePage.component()};
+  app.routes.ignoredUsers = {path: '/ignoredUsers', component: ProfilePage};
 
   addIgnoreUserControlButton();
   addHideIgnoredPost();
