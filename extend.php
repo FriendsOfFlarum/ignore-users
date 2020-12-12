@@ -73,10 +73,11 @@ return [
         ->modelPolicy(User::class, Access\UserPolicy::class)
         ->modelPolicy(User::class, Access\ByobuPolicy::class),
 
-    function (Dispatcher $events) {
-        $events->listen(ConfigureUserGambits::class, Listener\AddIgnoredUserGambit::class);
-        $events->listen(Saving::class, Listener\SaveIgnoredToDatabase::class);
+    (new Extend\Event())
+        ->listen(Saving::class, Listener\SaveIgnoredToDatabase::class)
+        ->listen(ConfigureUserGambits::class, Listener\AddIgnoredUserGambit::class),
 
+    function (Dispatcher $events) {
         $events->subscribe(Listener\AddByobuDMPrevention::class);
     },
 ];
