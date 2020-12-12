@@ -22,4 +22,8 @@ fof-ignore-users:
       unignore_button: Unignore
       unignore_confirmation: Are you sure you want to unignore this user?
 
+    badge:
+      user_label: Ignored user
+      discussion_label: Started by an ignored user
+
 

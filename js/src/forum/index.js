@@ -4,6 +4,7 @@ import addIgnoreUserControlButton from './addIgnoreUserControlButton';
 import addHideIgnoredPost from './addHideIgnoredPost';
 import addProfilePage from './addProfilePage'
 import ProfilePage from './components/ProfilePage';
+import addIgnoredUserBadge from './addIgnoredUserBadge';
 
 app.initializers.add('fof-ignore-users', function(app) {
   User.prototype.ignored = Model.attribute('ignored');
@@ -14,4 +15,5 @@ app.initializers.add('fof-ignore-users', function(app) {
   addIgnoreUserControlButton();
   addHideIgnoredPost();
   addProfilePage();
+  addIgnoredUserBadge();
 });
