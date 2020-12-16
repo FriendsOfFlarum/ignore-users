@@ -9,6 +9,14 @@
  * file that was distributed with this source code.
  */
 
+namespace FoF\IgnoreUsers;
+
+use Flarum\Api\Controller\ListUsersController;
+use Flarum\Api\Controller\ShowDiscussionController;
+use Flarum\Api\Controller\ShowUserController;
+use Flarum\Api\Serializer\CurrentUserSerializer;
+use Flarum\Api\Serializer\ForumSerializer;
+use Flarum\Api\Serializer\UserSerializer;
 use Flarum\Database\AbstractModel;
 use Flarum\Extend;
 use FoF\IgnoreUsers\Listener;
@@ -39,13 +47,37 @@ return [
             ->withPivot('ignored_at');
         }),
 
-    function (Dispatcher $events) {
-        $events->subscribe(Listener\AddIgnoredUsersRelationship::class);
-        $events->listen(ConfigureUserGambits::class, Listener\AddIgnoredUserGambit::class);
-        $events->listen(Saving::class, Listener\SaveIgnoredToDatabase::class);
+    (new Extend\ApiSerializer(CurrentUserSerializer::class))
+        ->hasMany('ignoredUsers', UserSerializer::class),
 
+    (new Extend\ApiController(ListUsersController::class))
+        ->prepareDataForSerialization(PrepareIgnoredUsers::class)
+        ->addInclude('ignoredUsers'),
+
+    (new Extend\ApiController(ShowUserController::class))
+        ->addInclude('ignoredUsers'),
+
+    (new Extend\ApiSerializer(UserSerializer::class))
+        ->attribute('ignored', function (UserSerializer $serializer, User $user){
+            $canIgnored = !$user->can('notBeIgnored');
+            return $canIgnored && $serializer->getActor()->ignoredUsers->contains($user);
+        }),
+
+    (new Extend\ApiSerializer(ForumSerializer::class))
+        ->mutate(function (ForumSerializer $serializer) {
+            $attributes['byobu-extend'] = true;
+            return $attributes;
+        }),
+
+    (new Extend\Policy())
+        ->modelPolicy(User::class, Access\UserPolicy::class)
+        ->modelPolicy(User::class, Access\ByobuPolicy::class),
+
+    (new Extend\Event())
+        ->listen(Saving::class, Listener\SaveIgnoredToDatabase::class)
+        ->listen(ConfigureUserGambits::class, Listener\AddIgnoredUserGambit::class),
+
+    function (Dispatcher $events) {
         $events->subscribe(Listener\AddByobuDMPrevention::class);
-        $events->subscribe(Access\UserPolicy::class);
-        $events->subscribe(Access\ByobuPolicy::class);
     },
 ];

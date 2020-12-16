@@ -13,7 +13,7 @@
 
 namespace FoF\IgnoreUsers\Access;
 
-use Flarum\User\AbstractPolicy;
+use Flarum\User\Access\AbstractPolicy;
 use Flarum\User\User;
 
 class UserPolicy extends AbstractPolicy
