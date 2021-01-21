@@ -1,14 +1,12 @@
 <?php
 
-/**
+/*
+ * This file is part of fof/ignore-users.
  *
- *  This file is part of fof/ignore-users.
+ * Copyright (c) 2019 - 2021 FriendsOfFlarum..
  *
- *  Copyright (c) 2019 FriendsOfFlarum..
- *
- *  For the full copyright and license information, please view the license.md
- *  file that was distributed with this source code.
- *
+ * For the full copyright and license information, please view the license.md
+ * file that was distributed with this source code.
  */
 
 namespace FoF\IgnoreUsers\User\Search\Gambit;
@@ -30,7 +28,7 @@ class IgnoredGambit extends AbstractRegexGambit
      */
     protected function conditions(AbstractSearch $search, array $matches, $negate)
     {
-        if (! $search instanceof UserSearch) {
+        if (!$search instanceof UserSearch) {
             throw new LogicException('This gambit can only be applied on a UserSearch');
         }
 
