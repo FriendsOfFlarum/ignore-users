@@ -17,11 +17,6 @@ use Flarum\User\User;
 class ByobuPolicy extends AbstractPolicy
 {
     /**
-     * {@inheritdoc}
-     */
-    protected $model = User::class;
-
-    /**
      * @param User $actor
      * @param User $user
      *

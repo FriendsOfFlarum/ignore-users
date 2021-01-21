@@ -11,17 +11,14 @@
 
 namespace FoF\IgnoreUsers;
 
-use Flarum\Api\Controller\ListUsersController;
-use Flarum\Api\Controller\ShowUserController;
-use Flarum\Api\Serializer\CurrentUserSerializer;
-use Flarum\Api\Serializer\ForumSerializer;
-use Flarum\Api\Serializer\UserSerializer;
+use Flarum\Api\Controller;
+use Flarum\Api\Serializer;
 use Flarum\Database\AbstractModel;
 use Flarum\Event\ConfigureUserGambits;
 use Flarum\Extend;
 use Flarum\User\Event\Saving;
 use Flarum\User\User;
-use Illuminate\Contracts\Events\Dispatcher;
+use FoF\Byobu\Events\SearchingRecipient;
 
 return [
     new Extend\Locales(__DIR__.'/resources/locale'),
@@ -44,31 +41,24 @@ return [
             ->withPivot('ignored_at');
         }),
 
-    (new Extend\ApiSerializer(CurrentUserSerializer::class))
-        ->hasMany('ignoredUsers', UserSerializer::class),
+    (new Extend\ApiSerializer(Serializer\CurrentUserSerializer::class))
+        ->hasMany('ignoredUsers', Serializer\UserSerializer::class),
 
-    (new Extend\ApiController(ListUsersController::class))
+    (new Extend\ApiController(Controller\ListUsersController::class))
         ->prepareDataForSerialization(PrepareIgnoredUsers::class)
         ->addInclude('ignoredUsers'),
 
-    (new Extend\ApiController(ShowUserController::class))
+    (new Extend\ApiController(Controller\ShowUserController::class))
         ->addInclude('ignoredUsers'),
 
-    (new Extend\ApiSerializer(UserSerializer::class))
-        ->attribute('ignored', function (UserSerializer $serializer, User $user) {
+    (new Extend\ApiSerializer(Serializer\UserSerializer::class))
+        ->attribute('ignored', function (Serializer\UserSerializer $serializer, User $user) {
             $canIgnored = !$user->can('notBeIgnored');
 
             return $canIgnored && $serializer->getActor()->ignoredUsers->contains($user);
         })
-        ->attribute('canBeIgnored', function (UserSerializer $serializer, User $user) {
+        ->attribute('canBeIgnored', function (Serializer\UserSerializer $serializer, User $user) {
             return (bool) $serializer->getActor()->can('ignore', $user);
-        }),
-
-    (new Extend\ApiSerializer(ForumSerializer::class))
-        ->mutate(function (ForumSerializer $serializer) {
-            $attributes['byobu-extend'] = true;
-
-            return $attributes;
         }),
 
     (new Extend\Policy())
@@ -77,9 +67,6 @@ return [
 
     (new Extend\Event())
         ->listen(Saving::class, Listener\SaveIgnoredToDatabase::class)
-        ->listen(ConfigureUserGambits::class, Listener\AddIgnoredUserGambit::class),
-
-    function (Dispatcher $events) {
-        $events->subscribe(Listener\AddByobuDMPrevention::class);
-    },
+        ->listen(ConfigureUserGambits::class, Listener\AddIgnoredUserGambit::class)
+        ->listen(SearchingRecipient::class, Listener\AddByobuDMPrevention::class),
 ];

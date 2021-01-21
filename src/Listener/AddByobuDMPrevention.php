@@ -11,45 +11,16 @@
 
 namespace FoF\IgnoreUsers\Listener;
 
-use Flarum\User\Exception\PermissionDeniedException;
-use Flarum\User\UserRepository;
-use FoF\Byobu\Events\DiscussionMadePrivate;
 use FoF\Byobu\Events\SearchingRecipient;
-use Illuminate\Contracts\Events\Dispatcher;
 
 class AddByobuDMPrevention
 {
-    /**
-     * @var UserRepository
-     */
-    protected $users;
-
-    public function __construct(UserRepository $users)
-    {
-        $this->users = $users;
-    }
-
-    public function subscribe(Dispatcher $events)
-    {
-        $events->listen(DiscussionMadePrivate::class, [$this, 'preventNewDM']);
-        $events->listen(SearchingRecipient::class, [$this, 'preventRecipientSearch']);
-    }
-
-    public function preventRecipientSearch(SearchingRecipient $event)
+    public function handle(SearchingRecipient $event)
     {
         $actor = $event->search->getActor();
 
         $ids = $actor->ignoredBy()->pluck('id')->all();
 
         $event->search->getQuery()->whereNotIn('id', $ids);
-    }
-
-    public function preventNewDM(DiscussionMadePrivate $event)
-    {
-        if (array_intersect($event->newUsers->toArray(), $event->actor->ignoredBy()->pluck('id')->all())) {
-            $event->discussion->delete();
-
-            throw new PermissionDeniedException();
-        }
     }
 }
