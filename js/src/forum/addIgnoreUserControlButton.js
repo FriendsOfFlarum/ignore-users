@@ -4,7 +4,7 @@ import Button from 'flarum/components/Button';
 
 export default function() {
   extend(UserControls, 'userControls', function(items, user) {
-    if (app.session.user === user || !app.session.user) {
+    if (app.session.user === user || !app.session.user || !user.canBeIgnored()) {
       return;
     }
 

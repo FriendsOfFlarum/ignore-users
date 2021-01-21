@@ -59,6 +59,9 @@ return [
             $canIgnored = !$user->can('notBeIgnored');
 
             return $canIgnored && $serializer->getActor()->ignoredUsers->contains($user);
+        })
+        ->attribute('canBeIgnored', function (UserSerializer $serializer, User $user) {
+            return (bool) $serializer->getActor()->can('ignore', $user);
         }),
 
     (new Extend\ApiSerializer(ForumSerializer::class))

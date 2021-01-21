@@ -9,6 +9,7 @@ import addIgnoredUserBadge from './addIgnoredUserBadge';
 app.initializers.add('fof-ignore-users', function(app) {
   User.prototype.ignored = Model.attribute('ignored');
   User.prototype.ignoredUsers = Model.hasMany('ignoredUsers');
+  User.prototype.canBeIgnored = Model.attribute('canBeIgnored');
 
   app.routes.ignoredUsers = {path: '/ignoredUsers', component: ProfilePage};
 
