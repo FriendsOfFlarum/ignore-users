@@ -23,7 +23,7 @@ export default class ProfilePage extends UserPage {
 
         this.ignoredUsers = app.session.user.ignoredUsers();
 
-        this.loadUser(app.session.user.username())
+        this.loadUser(app.session.user.username());
     }
 
     content() {
@@ -32,32 +32,37 @@ export default class ProfilePage extends UserPage {
                 {this.ignoredUsers.map((user, i) => {
                     var unignore = () => {
                         if (confirm(app.translator.trans(`fof-ignore-users.forum.user_controls.unignore_confirmation`))) {
-                            user.save({ignored: false});
+                            user.save({ ignored: false });
                             this.ignoredUsers.splice(i, 1);
-                            app.session.user.ignoredUsers = Stream(this.ignoredUsers)
+                            app.session.user.ignoredUsers = Stream(this.ignoredUsers);
                         }
-                    }
+                    };
 
                     return (
                         <tr>
                             <td>
                                 <a href={app.route.user(user)} config={m.route}>
-                                    <h3>{avatar(user, {className: 'ignorePage-avatar'})} {username(user)}</h3>
+                                    <h3>
+                                        {avatar(user, { className: 'ignorePage-avatar' })} {username(user)}
+                                    </h3>
                                 </a>
                             </td>
                             <td className="ignorePage-button">
-                                {Button.component({
-                                    icon: 'fas fa-comment',
-                                    type: 'button',
-                                    className: 'Button Button--warning',
-                                    onclick: unignore.bind(user),
-                                }, app.translator.trans('fof-ignore-users.forum.user_controls.unignore_button'))}
+                                {Button.component(
+                                    {
+                                        icon: 'fas fa-comment',
+                                        type: 'button',
+                                        className: 'Button Button--warning',
+                                        onclick: unignore.bind(user),
+                                    },
+                                    app.translator.trans('fof-ignore-users.forum.user_controls.unignore_button')
+                                )}
                             </td>
                         </tr>
-                    )
+                    );
                 })}
             </table>
-        )
+        );
     }
 
     show(user) {
