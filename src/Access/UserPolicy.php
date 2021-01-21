@@ -30,9 +30,9 @@ class UserPolicy extends AbstractPolicy
      */
     public function ignore(User $actor, User $user)
     {
-        if ($user->can('notBeIgnored') || $user->id === $actor->id) {
-            return false;
+        if ($user->hasPermission('notBeIgnored') || $user->id === $actor->id) {
+            return $this->deny();
         }
-        return true;
+        return $this->allow();
     }
 }
