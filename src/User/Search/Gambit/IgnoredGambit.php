@@ -12,26 +12,20 @@
 namespace FoF\IgnoreUsers\User\Search\Gambit;
 
 use Flarum\Search\AbstractRegexGambit;
-use Flarum\Search\AbstractSearch;
-use Flarum\User\Search\UserSearch;
-use LogicException;
+use Flarum\Search\SearchState;
 
 class IgnoredGambit extends AbstractRegexGambit
 {
-    /**
-     * {@inheritdoc}
-     */
-    protected $pattern = 'is:ignor(?:ing|ed)';
-
-    /**
-     * {@inheritdoc}
-     */
-    protected function conditions(AbstractSearch $search, array $matches, $negate)
+    public function getGambitPattern()
     {
-        if (!$search instanceof UserSearch) {
-            throw new LogicException('This gambit can only be applied on a UserSearch');
-        }
+        return 'is:ignor(?:ing|ed)';
+    }
 
+    /**
+     * {@inheritdoc}
+     */
+    protected function conditions(SearchState $search, array $matches, $negate)
+    {
         $actor = $search->getActor();
 
         $method = $negate ? 'whereNotExists' : 'whereExists';

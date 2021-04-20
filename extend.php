@@ -17,8 +17,10 @@ use Flarum\Database\AbstractModel;
 use Flarum\Event\ConfigureUserGambits;
 use Flarum\Extend;
 use Flarum\User\Event\Saving;
+use Flarum\User\Search\UserSearcher;
 use Flarum\User\User;
 use FoF\Byobu\Events\SearchingRecipient;
+use FoF\IgnoreUsers\User\Search\Gambit\IgnoredGambit;
 
 return [
     new Extend\Locales(__DIR__.'/resources/locale'),
@@ -67,6 +69,8 @@ return [
 
     (new Extend\Event())
         ->listen(Saving::class, Listener\SaveIgnoredToDatabase::class)
-        ->listen(ConfigureUserGambits::class, Listener\AddIgnoredUserGambit::class)
         ->listen(SearchingRecipient::class, Listener\AddByobuDMPrevention::class),
+
+    (new Extend\SimpleFlarumSearch(UserSearcher::class))
+        ->addGambit(IgnoredGambit::class),
 ];
