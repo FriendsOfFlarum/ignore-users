@@ -3,7 +3,7 @@
 /*
  * This file is part of fof/ignore-users.
  *
- * Copyright (c) 2019 - 2021 FriendsOfFlarum..
+ * Copyright (c) FriendsOfFlarum.
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -14,7 +14,6 @@ namespace FoF\IgnoreUsers;
 use Flarum\Api\Controller;
 use Flarum\Api\Serializer;
 use Flarum\Database\AbstractModel;
-use Flarum\Event\ConfigureUserGambits;
 use Flarum\Extend;
 use Flarum\User\Event\Saving;
 use Flarum\User\Search\UserSearcher;
