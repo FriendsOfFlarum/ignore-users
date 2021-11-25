@@ -1,3 +1,4 @@
+import app from 'flarum/forum/app';
 import { extend } from 'flarum/common/extend';
 import Discussion from 'flarum/common/models/Discussion';
 import User from 'flarum/common/models/User';

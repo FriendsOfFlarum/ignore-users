@@ -1,14 +1,4 @@
-/*
- *
- *  This file is part of fof/ignore-users.
- *
- *  Copyright (c) 2019 FriendsOfFlarum..
- *
- *  For the full copyright and license information, please view the license.md
- *  file that was distributed with this source code.
- *
- */
-
+import app from 'flarum/forum/app';
 import avatar from 'flarum/common/helpers/avatar';
 import Button from 'flarum/common/components/Button';
 import username from 'flarum/common/helpers/username';
