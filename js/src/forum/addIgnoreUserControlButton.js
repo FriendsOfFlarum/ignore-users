@@ -31,7 +31,7 @@ export default function () {
     } else {
       items.add(
         'ignore',
-        <Button icon="fas fa-comment-slash" onlick={ignore.bind(user)}>
+        <Button icon="fas fa-comment-slash" onclick={ignore.bind(user)}>
           {app.translator.trans('fof-ignore-users.forum.user_controls.ignore_button')}
         </Button>
       );
