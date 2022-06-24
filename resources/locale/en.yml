@@ -26,4 +26,7 @@ fof-ignore-users:
       user_label: Ignored user
       discussion_label: Started by an ignored user
 
+    user:
+      ignored_users_empty_text: It look like there no ignored users here.
+
 

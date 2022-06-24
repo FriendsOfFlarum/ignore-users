@@ -4,6 +4,8 @@ import Button from 'flarum/common/components/Button';
 import username from 'flarum/common/helpers/username';
 import UserPage from 'flarum/forum/components/UserPage';
 import Stream from 'flarum/common/utils/Stream';
+import Link from 'flarum/common/components/Link';
+import Placeholder from 'flarum/common/components/Placeholder';
 
 export default class ProfilePage extends UserPage {
   oninit(vdom) {
@@ -17,10 +19,18 @@ export default class ProfilePage extends UserPage {
   }
 
   content() {
+    if (this.ignoredUsers.length === 0) {
+      return (
+        <div className="IgnoresUserPage">
+          <Placeholder text={app.translator.trans('fof-ignore-users.forum.user.ignored_users_empty_text')} />
+        </div>
+      );
+    }
+
     return (
       <table className="NotificationGrid">
         {this.ignoredUsers.map((user, i) => {
-          var unignore = () => {
+          const unignore = () => {
             if (confirm(app.translator.trans(`fof-ignore-users.forum.user_controls.unignore_confirmation`))) {
               user.save({ ignored: false });
               this.ignoredUsers.splice(i, 1);
@@ -29,13 +39,12 @@ export default class ProfilePage extends UserPage {
           };
 
           return (
-            <tr>
+            <tr className="ignorePage-user">
               <td>
-                <a href={app.route.user(user)} config={m.route}>
-                  <h3>
-                    {avatar(user, { className: 'ignorePage-avatar' })} {username(user)}
-                  </h3>
-                </a>
+                <Link href={app.route.user(user)}>
+                  {avatar(user, { className: 'ignorePage-avatar' })}
+                  {username(user)}
+                </Link>
               </td>
               <td className="ignorePage-button">
                 {Button.component(
