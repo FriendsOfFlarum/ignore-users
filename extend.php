@@ -12,6 +12,7 @@
 namespace FoF\IgnoreUsers;
 
 use Flarum\Api\Controller;
+use Flarum\Api\Controller\ShowForumController;
 use Flarum\Api\Serializer;
 use Flarum\Database\AbstractModel;
 use Flarum\Extend;
@@ -70,4 +71,7 @@ return [
 
     (new Extend\SimpleFlarumSearch(UserSearcher::class))
         ->addGambit(IgnoredGambit::class),
+
+    (new Extend\ApiController(ShowForumController::class))
+        ->addInclude('actor.ignoredUsers'),
 ];
