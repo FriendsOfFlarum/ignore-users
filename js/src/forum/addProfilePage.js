@@ -8,7 +8,7 @@ export default function () {
     if (app.session.user && app.session.user === this.user)
       items.add(
         'ignored-users',
-        <LinkButton href={app.route('ignoredUsers')} icon="fas fa-user-slash">
+        <LinkButton href={app.route('user.ignoredUsers')} icon="fas fa-user-slash">
           {app.translator.trans('fof-ignore-users.forum.profile_link')}
         </LinkButton>
       );

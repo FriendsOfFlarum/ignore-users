@@ -14,6 +14,8 @@ fof-ignore-users:
   forum:
 
     profile_link: Ignored Users
+    profile_page:
+      no_ignored: It looks like you're not ignoring anyone.
 
     # These strings are used in the User Controls menu.
     user_controls:
