@@ -44,10 +44,29 @@
                 "name": "fas fa-comment-slash",
                 "backgroundColor": "#e74c3c",
                 "color": "#fff"
-            }
+            },
+            "optional-dependencies": [
+                "fof/byobu"
+            ]
         },
         "flagrow": {
             "discuss": "https://discuss.flarum.org/d/20681"
+        },
+        "flarum-cli": {
+            "modules": {
+                "githubActions": true
+            }
         }
+    },
+    "require-dev": {
+        "flarum/phpstan": "*",
+        "fof/byobu": "*"
+    },
+    "scripts": {
+        "analyse:phpstan": "phpstan analyse",
+        "clear-cache:phpstan": "phpstan clear-result-cache"
+    },
+    "scripts-descriptions": {
+        "analyse:phpstan": "Run static analysis"
     }
 }
