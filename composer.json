@@ -44,7 +44,10 @@
                 "name": "fas fa-comment-slash",
                 "backgroundColor": "#e74c3c",
                 "color": "#fff"
-            }
+            },
+            "optional-dependencies": [
+                "fof/byobu"
+            ]
         },
         "flagrow": {
             "discuss": "https://discuss.flarum.org/d/20681"
@@ -56,7 +59,8 @@
         }
     },
     "require-dev": {
-        "flarum/phpstan": "*"
+        "flarum/phpstan": "*",
+        "fof/byobu": "*"
     },
     "scripts": {
         "analyse:phpstan": "phpstan analyse",

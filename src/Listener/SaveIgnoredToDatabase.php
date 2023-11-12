@@ -45,16 +45,19 @@ class SaveIgnoredToDatabase
 
             $ignored = (bool) $attributes['ignored'];
             $changed = false;
+            /** @phpstan-ignore-next-line */
             $exists = $actor->ignoredUsers()->where('ignored_user_id', $user->id)->exists();
 
             if ($ignored) {
                 if (!$exists) {
                     $this->events->dispatch(new Ignoring($user, $actor));
+                    /** @phpstan-ignore-next-line */
                     $actor->ignoredUsers()->attach($user, ['ignored_at' => Carbon::now()]);
                     $changed = true;
                 }
             } elseif ($exists) {
                 $this->events->dispatch(new Unignoring($user, $actor));
+                /** @phpstan-ignore-next-line */
                 $actor->ignoredUsers()->detach($user);
                 $changed = true;
             }

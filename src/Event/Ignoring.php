@@ -25,7 +25,7 @@ class Ignoring
     /**
      * The user who is getting ignored.
      *
-     * @var array
+     * @var User
      */
     public $user;
 

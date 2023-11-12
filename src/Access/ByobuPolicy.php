@@ -24,6 +24,7 @@ class ByobuPolicy extends AbstractPolicy
      */
     public function cannotBeDirectMessaged(User $actor, User $user)
     {
+        /** @phpstan-ignore-next-line */
         if (in_array($actor->id, $user->ignoredUsers()->pluck('id')->all())) {
             return $this->deny();
         }

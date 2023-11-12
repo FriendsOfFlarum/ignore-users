@@ -14,7 +14,6 @@ namespace FoF\IgnoreUsers;
 use Flarum\Api\Controller;
 use Flarum\Api\Controller\ShowForumController;
 use Flarum\Api\Serializer;
-use Flarum\Database\AbstractModel;
 use Flarum\Extend;
 use Flarum\User\Event\Saving;
 use Flarum\User\Search\UserSearcher;
@@ -33,11 +32,11 @@ return [
         ->route('/ignoredUsers', 'ignored.users.view'),
 
     (new Extend\Model(User::class))
-        ->relationship('ignoredUsers', function (AbstractModel $model) {
+        ->relationship('ignoredUsers', function (User $model) {
             return $model->belongsToMany(User::class, 'ignored_user', 'user_id', 'ignored_user_id')
             ->withPivot('ignored_at');
         })
-        ->relationship('ignoredBy', function (AbstractModel $model) {
+        ->relationship('ignoredBy', function (User $model) {
             return $model->belongsToMany(User::class, 'ignored_user', 'ignored_user_id', 'user_id')
             ->withPivot('ignored_at');
         }),
@@ -56,6 +55,7 @@ return [
         ->attribute('ignored', function (Serializer\UserSerializer $serializer, User $user) {
             $canIgnored = !$user->can('notBeIgnored');
 
+            /** @phpstan-ignore-next-line */
             return $canIgnored && $serializer->getActor()->ignoredUsers->contains($user);
         })
         ->attribute('canBeIgnored', function (Serializer\UserSerializer $serializer, User $user) {

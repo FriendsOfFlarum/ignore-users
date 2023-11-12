@@ -25,7 +25,7 @@ class Unignoring
     /**
      * The user who is getting unignored.
      *
-     * @var array
+     * @var User
      */
     public $user;
 
