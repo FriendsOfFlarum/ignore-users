@@ -37,6 +37,9 @@
         }
     },
     "extra": {
+        "branch-alias": {
+            "2.x": "2.x-dev"
+        },
         "flarum-extension": {
             "title": "FoF Ignore Users",
             "category": "feature",
@@ -62,7 +65,7 @@
         "flarum/phpstan": "^2.0.0-beta",
         "flarum/testing": "^2.0.0-beta",
         "fof/byobu": "^2.0.0-beta",
-        "fof/split": "*"
+        "fof/split": "^2.0.0-beta"
     },
     "scripts": {
         "analyse:phpstan": "phpstan analyse",
@@ -70,7 +73,5 @@
     },
     "scripts-descriptions": {
         "analyse:phpstan": "Run static analysis"
-    },
-    "minimum-stability": "dev",
-    "prefer-stable": true
+    }
 }
