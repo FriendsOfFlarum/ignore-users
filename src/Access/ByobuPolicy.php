@@ -20,13 +20,15 @@ class ByobuPolicy extends AbstractPolicy
      * @param User $actor
      * @param User $user
      *
-     * @return bool|null
+     * @return string|bool|null
      */
-    public function cannotBeDirectMessaged(User $actor, User $user)
+    public function cannotBeDirectMessaged(User $actor, User $user): string|bool|null
     {
         /** @phpstan-ignore-next-line */
         if (in_array($actor->id, $user->ignoredUsers()->pluck('id')->all())) {
             return $this->deny();
         }
+
+        return null;
     }
 }

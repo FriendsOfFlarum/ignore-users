@@ -61,7 +61,8 @@
     "require-dev": {
         "flarum/phpstan": "^2.0.0-beta",
         "flarum/testing": "^2.0.0-beta",
-        "fof/byobu": "^2.0.0-beta"
+        "fof/byobu": "^2.0.0-beta",
+        "fof/split": "*"
     },
     "scripts": {
         "analyse:phpstan": "phpstan analyse",
@@ -69,5 +70,7 @@
     },
     "scripts-descriptions": {
         "analyse:phpstan": "Run static analysis"
-    }
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true
 }

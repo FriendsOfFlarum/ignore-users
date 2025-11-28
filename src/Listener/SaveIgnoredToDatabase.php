@@ -33,7 +33,7 @@ class SaveIgnoredToDatabase
         $this->events = $events;
     }
 
-    public function handle(Saving $event)
+    public function handle(Saving $event): void
     {
         $attributes = Arr::get($event->data, 'attributes', []);
 
