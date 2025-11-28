@@ -11,14 +11,18 @@
 
 namespace FoF\IgnoreUsers;
 
-use Flarum\Api\Controller;
-use Flarum\Api\Controller\ShowForumController;
-use Flarum\Api\Serializer;
+use Carbon\Carbon;
+use Flarum\Api\Context;
+use Flarum\Api\Resource;
+use Flarum\Api\Schema;
 use Flarum\Extend;
-use Flarum\User\Event\Saving;
+use Flarum\Search\Database\DatabaseSearchDriver;
 use Flarum\User\Search\UserSearcher;
 use Flarum\User\User;
-use FoF\IgnoreUsers\User\Search\Gambit\IgnoredGambit;
+use FoF\IgnoreUsers\Event\Ignoring;
+use FoF\IgnoreUsers\Event\Unignoring;
+use FoF\IgnoreUsers\User\Search\Filter\IgnoredFilter;
+use Illuminate\Contracts\Events\Dispatcher;
 
 return [
     new Extend\Locales(__DIR__.'/resources/locale'),
@@ -41,37 +45,64 @@ return [
             ->withPivot('ignored_at');
         }),
 
-    (new Extend\ApiSerializer(Serializer\CurrentUserSerializer::class))
-        ->hasMany('ignoredUsers', Serializer\UserSerializer::class),
+    (new Extend\ApiResource(Resource\UserResource::class))
+        ->fields(fn () => [
+            Schema\Relationship\ToMany::make('ignoredUsers')
+                ->type('users')
+                ->includable(),
 
-    (new Extend\ApiController(Controller\ListUsersController::class))
-        ->addInclude('ignoredUsers')
-        ->load('ignoredUsers'),
+            Schema\Boolean::make('ignored')
+                ->get(function (User $user, Context $context) {
+                    $actor = $context->getActor();
+                    $canIgnored = !$user->can('notBeIgnored');
 
-    (new Extend\ApiController(Controller\ShowUserController::class))
-        ->addInclude('ignoredUsers'),
+                    /** @phpstan-ignore-next-line */
+                    return $canIgnored && $actor->ignoredUsers->contains($user);
+                })
+                ->writable()
+                ->set(function (User $user, bool $value, Context $context) {
+                    $actor = $context->getActor();
+                    $actor->assertCan('ignore', $user);
 
-    (new Extend\ApiSerializer(Serializer\UserSerializer::class))
-        ->attribute('ignored', function (Serializer\UserSerializer $serializer, User $user) {
-            $canIgnored = !$user->can('notBeIgnored');
+                    /** @phpstan-ignore-next-line */
+                    $exists = $actor->ignoredUsers()->where('ignored_user_id', $user->id)->exists();
+                    $changed = false;
 
-            /** @phpstan-ignore-next-line */
-            return $canIgnored && $serializer->getActor()->ignoredUsers->contains($user);
-        })
-        ->attribute('canBeIgnored', function (Serializer\UserSerializer $serializer, User $user) {
-            return (bool) $serializer->getActor()->can('ignore', $user);
+                    if ($value) {
+                        if (!$exists) {
+                            resolve(Dispatcher::class)->dispatch(new Ignoring($user, $actor));
+                            /** @phpstan-ignore-next-line */
+                            $actor->ignoredUsers()->attach($user, ['ignored_at' => Carbon::now()]);
+                            $changed = true;
+                        }
+                    } elseif ($exists) {
+                        resolve(Dispatcher::class)->dispatch(new Unignoring($user, $actor));
+                        /** @phpstan-ignore-next-line */
+                        $actor->ignoredUsers()->detach($user);
+                        $changed = true;
+                    }
+
+                    if ($changed) {
+                        $actor->load('ignoredUsers');
+                    }
+                }),
+
+            Schema\Boolean::make('canBeIgnored')
+                ->get(function (User $user, $context) {
+                    return (bool) $context->getActor()->can('ignore', $user);
+                }),
+        ])
+        ->endpoint(['index', 'show'], function ($endpoint) {
+            return $endpoint->addDefaultInclude(['ignoredUsers']);
         }),
 
     (new Extend\Policy())
         ->modelPolicy(User::class, Access\UserPolicy::class)
         ->modelPolicy(User::class, Access\ByobuPolicy::class),
 
-    (new Extend\Event())
-        ->listen(Saving::class, Listener\SaveIgnoredToDatabase::class),
+    (new Extend\SearchDriver(DatabaseSearchDriver::class))
+        ->addFilter(UserSearcher::class, IgnoredFilter::class),
 
-    (new Extend\SimpleFlarumSearch(UserSearcher::class))
-        ->addGambit(IgnoredGambit::class),
-
-    (new Extend\ApiController(ShowForumController::class))
-        ->addInclude('actor.ignoredUsers'),
+    (new Extend\ApiResource(Resource\ForumResource::class))
+        ->endpoint('show', fn ($endpoint) => $endpoint->addDefaultInclude(['actor.ignoredUsers'])),
 ];

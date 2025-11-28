@@ -20,9 +20,9 @@ class UserPolicy extends AbstractPolicy
      * @param User $actor
      * @param User $user
      *
-     * @return bool|null
+     * @return string|bool|null
      */
-    public function ignore(User $actor, User $user)
+    public function ignore(User $actor, User $user): string|bool|null
     {
         if ($user->hasPermission('notBeIgnored') || $user->id === $actor->id) {
             return $this->deny();

@@ -1,26 +1,33 @@
 import app from 'flarum/forum/app';
-import avatar from 'flarum/common/helpers/avatar';
+import Avatar from 'flarum/common/components/Avatar';
 import Button from 'flarum/common/components/Button';
+import Link from 'flarum/common/components/Link';
 import username from 'flarum/common/helpers/username';
 import UserPage from 'flarum/forum/components/UserPage';
 import Stream from 'flarum/common/utils/Stream';
 import Placeholder from 'flarum/common/components/Placeholder';
 import LoadingIndicator from 'flarum/common/components/LoadingIndicator';
+import extractText from 'flarum/common/utils/extractText';
+import type Mithril from 'mithril';
+import type User from 'flarum/common/models/User';
 
 export default class ProfilePage extends UserPage {
-  oninit(vdom) {
-    super.oninit(vdom);
+  loading!: boolean;
+  ignoredUsers!: User[];
+
+  oninit(vnode: Mithril.Vnode) {
+    super.oninit(vnode);
 
     this.loading = true;
 
-    this.ignoredUsers = app.session.user.ignoredUsers();
+    this.ignoredUsers = app.session.user!.ignoredUsers() || [];
 
-    this.loadUser(app.session.user.username());
+    this.loadUser(app.session.user!.username());
 
     this.loading = false;
   }
 
-  content() {
+  content(): Mithril.Children {
     if (this.loading) {
       return (
         <div className="DiscussionList">
@@ -40,33 +47,27 @@ export default class ProfilePage extends UserPage {
     return (
       <table className="NotificationGrid">
         {this.ignoredUsers.map((user, i) => {
-          var unignore = () => {
-            if (confirm(app.translator.trans(`fof-ignore-users.forum.user_controls.unignore_confirmation`))) {
+          const unignore = () => {
+            if (confirm(extractText(app.translator.trans(`fof-ignore-users.forum.user_controls.unignore_confirmation`)))) {
               user.save({ ignored: false });
               this.ignoredUsers.splice(i, 1);
-              app.session.user.ignoredUsers = Stream(this.ignoredUsers);
+              app.session.user!.ignoredUsers = Stream(this.ignoredUsers);
             }
           };
 
           return (
             <tr>
               <td>
-                <a href={app.route.user(user)} config={m.route}>
+                <Link href={app.route.user(user)}>
                   <h3>
-                    {avatar(user, { className: 'ignorePage-avatar' })} {username(user)}
+                    <Avatar user={user} className="ignorePage-avatar" /> {username(user)}
                   </h3>
-                </a>
+                </Link>
               </td>
               <td className="ignorePage-button">
-                {Button.component(
-                  {
-                    icon: 'fas fa-comment',
-                    type: 'button',
-                    className: 'Button Button--warning',
-                    onclick: unignore.bind(user),
-                  },
-                  app.translator.trans('fof-ignore-users.forum.user_controls.unignore_button')
-                )}
+                <Button icon="fas fa-comment" type="button" className="Button Button--warning" onclick={unignore.bind(user)}>
+                  {app.translator.trans('fof-ignore-users.forum.user_controls.unignore_button')}
+                </Button>
               </td>
             </tr>
           );
@@ -75,8 +76,8 @@ export default class ProfilePage extends UserPage {
     );
   }
 
-  show(user) {
-    this.user = app.session.user;
+  show(user: User) {
+    this.user = app.session.user!;
 
     m.redraw();
   }
