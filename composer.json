@@ -75,5 +75,5 @@
         "analyse:phpstan": "Run static analysis"
     },
     "minimum-stability": "beta",
-    "prefer-stable": "true"
+    "prefer-stable": true
 }
