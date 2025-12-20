@@ -38,7 +38,7 @@
     },
     "extra": {
         "branch-alias": {
-            "2.x-dev": "2.x"
+            "2.x": "2.x-dev"
         },
         "flarum-extension": {
             "title": "FoF Ignore Users",
