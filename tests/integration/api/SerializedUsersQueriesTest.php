@@ -5,7 +5,7 @@
  *
  * Copyright (c) FriendsOfFlarum.
  *
- * For the full copyright and license information, please view the LICENSE.md
+ * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
 
@@ -51,18 +51,18 @@ class SerializedUsersQueriesTest extends IgnoreTestCase
 
         foreach ([...self::EDITORS, self::EXEMPT_EDITOR, 1] as $i => $editor) {
             $posts[] = [
-                'id' => $i + 1, 'number' => $i + 1, 'discussion_id' => 1, 'user_id' => 2, 'type' => 'comment',
-                'content' => '<t><p>Post</p></t>', 'created_at' => Carbon::parse('2026-03-01'),
+                'id'        => $i + 1, 'number' => $i + 1, 'discussion_id' => 1, 'user_id' => 2, 'type' => 'comment',
+                'content'   => '<t><p>Post</p></t>', 'created_at' => Carbon::parse('2026-03-01'),
                 'edited_at' => Carbon::parse('2026-03-02'), 'edited_user_id' => $editor,
             ];
         }
 
         $this->prepareDatabase([
-            User::class => $users,
+            User::class       => $users,
             Discussion::class => [
                 ['id' => 1, 'title' => 'Edited posts', 'created_at' => Carbon::parse('2026-03-01'), 'user_id' => 2, 'first_post_id' => 1, 'comment_count' => count($posts)],
             ],
-            Post::class => $posts,
+            Post::class    => $posts,
             'ignored_user' => [
                 ['user_id' => 2, 'ignored_user_id' => self::IGNORED_EDITOR, 'ignored_at' => '2026-01-01 00:00:00'],
                 ['user_id' => 2, 'ignored_user_id' => self::EXEMPT_EDITOR, 'ignored_at' => '2026-01-01 00:00:00'],
