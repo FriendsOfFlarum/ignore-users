@@ -15,7 +15,9 @@ use Carbon\Carbon;
 use Flarum\Api\Context;
 use Flarum\Api\Resource;
 use Flarum\Api\Schema;
+use Flarum\Discussion\Event\Saving as DiscussionSaving;
 use Flarum\Extend;
+use Flarum\Messages\DialogMessage\Event\Creating as DialogMessageCreating;
 use Flarum\Search\Database\DatabaseSearchDriver;
 use Flarum\User\Search\UserSearcher;
 use Flarum\User\User;
@@ -97,12 +99,21 @@ return [
         }),
 
     (new Extend\Policy())
-        ->modelPolicy(User::class, Access\UserPolicy::class)
-        ->modelPolicy(User::class, Access\ByobuPolicy::class),
+        ->modelPolicy(User::class, Access\UserPolicy::class),
 
     (new Extend\SearchDriver(DatabaseSearchDriver::class))
         ->addFilter(UserSearcher::class, IgnoredFilter::class),
 
     (new Extend\ApiResource(Resource\ForumResource::class))
         ->endpoint('show', fn ($endpoint) => $endpoint->addDefaultInclude(['actor.ignoredUsers'])),
+
+    (new Extend\Conditional())
+        ->whenExtensionEnabled('flarum-messages', fn () => [
+            (new Extend\Event())
+                ->listen(DialogMessageCreating::class, Listener\PreventMessagingIgnoringUsers::class),
+        ])
+        ->whenExtensionEnabled('fof-byobu', fn () => [
+            (new Extend\Event())
+                ->listen(DiscussionSaving::class, Listener\PreventPrivateDiscussionWithIgnoringUsers::class),
+        ]),
 ];
