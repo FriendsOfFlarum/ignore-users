@@ -30,4 +30,23 @@ class UserPolicy extends AbstractPolicy
 
         return $this->allow();
     }
+
+    /**
+     * Whether $actor may start or continue a direct message with $recipient.
+     * Users holding `notBeIgnored` (e.g. staff) are exempt, mirroring `ignore()`.
+     */
+    public function sendDirectMessage(User $actor, User $recipient): string|bool|null
+    {
+        if ($actor->id === $recipient->id || $actor->hasPermission('notBeIgnored')) {
+            return $this->allow();
+        }
+
+        /** @phpstan-ignore-next-line */
+        if ($recipient->ignoredUsers()->where('ignored_user_id', $actor->id)->exists()) {
+            return $this->deny();
+        }
+
+        // Explicit allow: with no policy result Gate would fall back to a group permission named after the ability.
+        return $this->allow();
+    }
 }
