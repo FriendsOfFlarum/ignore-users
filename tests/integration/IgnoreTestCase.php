@@ -54,9 +54,9 @@ abstract class IgnoreTestCase extends TestCase
     {
         return $this->send($this->request('POST', '/api/dialog-messages', [
             'authenticatedAs' => $actor,
-            'json' => ['data' => ['type' => 'dialog-messages', 'attributes' => [
+            'json'            => ['data' => ['type' => 'dialog-messages', 'attributes' => [
                 'content' => 'Hello there',
-                'users' => [['id' => $recipient]],
+                'users'   => [['id' => $recipient]],
             ]]],
         ]));
     }
@@ -65,9 +65,9 @@ abstract class IgnoreTestCase extends TestCase
     {
         return $this->send($this->request('POST', '/api/discussions', [
             'authenticatedAs' => $actor,
-            'json' => ['data' => [
-                'type' => 'discussions',
-                'attributes' => ['title' => 'A private chat', 'content' => 'Hello in private'],
+            'json'            => ['data' => [
+                'type'          => 'discussions',
+                'attributes'    => ['title' => 'A private chat', 'content' => 'Hello in private'],
                 'relationships' => ['recipientUsers' => ['data' => [['type' => 'users', 'id' => (string) $recipient]]]],
             ]],
         ]));
@@ -77,7 +77,7 @@ abstract class IgnoreTestCase extends TestCase
     {
         return $this->send($this->request('PATCH', "/api/users/$target", [
             'authenticatedAs' => $actor,
-            'json' => ['data' => ['type' => 'users', 'id' => (string) $target, 'attributes' => ['ignored' => $ignored]]],
+            'json'            => ['data' => ['type' => 'users', 'id' => (string) $target, 'attributes' => ['ignored' => $ignored]]],
         ]));
     }
 

@@ -89,9 +89,9 @@ class ByobuPrivateDiscussionTest extends IgnoreTestCase
     {
         return $this->send($this->request('PATCH', '/api/discussions/1', [
             'authenticatedAs' => $actor,
-            'json' => ['data' => [
-                'type' => 'discussions',
-                'id' => '1',
+            'json'            => ['data' => [
+                'type'          => 'discussions',
+                'id'            => '1',
                 'relationships' => ['recipientUsers' => ['data' => array_map(
                     fn (int $id) => ['type' => 'users', 'id' => (string) $id],
                     $recipients

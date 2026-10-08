@@ -64,9 +64,9 @@ class DirectMessageTest extends IgnoreTestCase
 
         $response = $this->send($this->request('POST', '/api/dialog-messages', [
             'authenticatedAs' => 2,
-            'json' => ['data' => [
-                'type' => 'dialog-messages',
-                'attributes' => ['content' => 'Still there?'],
+            'json'            => ['data' => [
+                'type'          => 'dialog-messages',
+                'attributes'    => ['content' => 'Still there?'],
                 'relationships' => ['dialog' => ['data' => ['type' => 'dialogs', 'id' => '1']]],
             ]],
         ]));
