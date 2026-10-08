@@ -40,7 +40,10 @@ class ByobuPrivateDiscussionTest extends IgnoreTestCase
      */
     protected function allowedRepeatedQueries(): array
     {
-        return ['from `users` where `users`.`id` ='];
+        // Built from the grammar so it matches every driver's quoting and the table prefix.
+        $grammar = $this->database()->getQueryGrammar();
+
+        return ['from '.$grammar->wrapTable('users').' where '.$grammar->wrap('users.id').' ='];
     }
 
     #[Test]
