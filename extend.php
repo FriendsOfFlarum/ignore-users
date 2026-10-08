@@ -55,11 +55,13 @@ return [
 
             Schema\Boolean::make('ignored')
                 ->get(function (User $user, Context $context) {
-                    $actor = $context->getActor();
-                    $canIgnored = !$user->can('notBeIgnored');
-
+                    // Only a user the actor ignores needs their permissions checked.
                     /** @phpstan-ignore-next-line */
-                    return $canIgnored && $actor->ignoredUsers->contains($user);
+                    if (!$context->getActor()->ignoredUsers->contains($user)) {
+                        return false;
+                    }
+
+                    return Api\UserPermissionBuffer::defer($user, fn () => !$user->can('notBeIgnored'));
                 })
                 ->writable()
                 ->set(function (User $user, bool $value, Context $context) {
@@ -90,8 +92,15 @@ return [
                 }),
 
             Schema\Boolean::make('canBeIgnored')
-                ->get(function (User $user, $context) {
-                    return (bool) $context->getActor()->can('ignore', $user);
+                ->get(function (User $user, Context $context) {
+                    $actor = $context->getActor();
+
+                    // A guest can't ignore anyone; the policy says so without the user's permissions.
+                    if ($actor->isGuest()) {
+                        return $actor->can('ignore', $user);
+                    }
+
+                    return Api\UserPermissionBuffer::defer($user, fn () => $actor->can('ignore', $user));
                 }),
         ])
         ->endpoint(['index', 'show'], function ($endpoint) {

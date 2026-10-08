@@ -24,6 +24,11 @@ class UserPolicy extends AbstractPolicy
      */
     public function ignore(User $actor, User $user): string|bool|null
     {
+        // Checked first, so that a guest's check doesn't load the user's permissions.
+        if ($actor->isGuest()) {
+            return $this->deny();
+        }
+
         if ($user->hasPermission('notBeIgnored') || $user->id === $actor->id) {
             return $this->deny();
         }
