@@ -15,7 +15,9 @@ beforeAll(() => {
 it('lets admins choose who cannot be ignored, alongside the reply permissions', () => {
   const replyPermissions = new PermissionGrid().replyItems().toArray();
 
-  expect(replyPermissions.map((item) => ({ permission: item.permission, label: extractText(item.label) }))).toContainEqual({
+  expect(
+    replyPermissions.map((item) => ({ permission: 'permission' in item ? item.permission : undefined, label: extractText(item.label) }))
+  ).toContainEqual({
     permission: 'notBeIgnored',
     label: 'Can not be ignored',
   });
