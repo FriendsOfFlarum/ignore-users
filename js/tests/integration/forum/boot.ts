@@ -1,11 +1,8 @@
 import bootstrapForum from '@flarum/jest-config/src/bootstrap/forum';
 import { makeUser } from '@flarum/jest-config/factory';
 import app from 'flarum/forum/app';
-import flatten from 'flat';
-import jsYaml from 'js-yaml';
-import fs from 'fs';
-import path from 'path';
 import { extend } from '../../../src/forum';
+import loadTranslations from '../loadTranslations';
 
 /** The viewer (2) ignores user 3; user 4 is not ignored; user 5 cannot be ignored. */
 export const VIEWER = '2';
@@ -36,9 +33,8 @@ export default function bootForum(options: { viewer?: string | null; resources?:
     session: { userId: viewer === null ? null : Number(viewer), csrfToken: 'test' },
   });
 
+  // Before booting, as in production, where the strings arrive with the page payload.
+  loadTranslations();
   app.bootExtensions({ 'fof-ignore-users': { extend } });
   app.boot();
-
-  const locale = path.resolve(process.cwd(), '../resources/locale/en.yml');
-  app.translator.addTranslations(flatten(jsYaml.load(fs.readFileSync(locale, 'utf8'))));
 }
