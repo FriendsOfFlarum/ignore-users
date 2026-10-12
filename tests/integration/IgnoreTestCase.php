@@ -11,6 +11,7 @@
 
 namespace FoF\IgnoreUsers\Tests\integration;
 
+use Flarum\Group\Group;
 use Flarum\Testing\integration\RetrievesAuthorizedUsers;
 use Flarum\Testing\integration\TestCase;
 use Flarum\User\User;
@@ -42,6 +43,8 @@ abstract class IgnoreTestCase extends TestCase
             ],
             'group_permission' => [
                 ['group_id' => 10, 'permission' => 'notBeIgnored'],
+                // messages 2.0 allows one message per member every 10s; tests that send repeatedly must be exempt.
+                ['group_id' => Group::MEMBER_ID, 'permission' => 'dialog.sendMessageWithoutThrottle'],
             ],
             'ignored_user' => [
                 ['user_id' => 3, 'ignored_user_id' => 2, 'ignored_at' => '2026-01-01 00:00:00'],
