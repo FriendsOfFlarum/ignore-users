@@ -11,6 +11,7 @@
 
 namespace FoF\IgnoreUsers\Tests\integration\api;
 
+use Flarum\Group\Group;
 use Flarum\Messages\Dialog;
 use FoF\IgnoreUsers\Tests\integration\IgnoreTestCase;
 use PHPUnit\Framework\Attributes\Test;
@@ -106,5 +107,26 @@ class DirectMessageTest extends IgnoreTestCase
     public function the_viewer_can_message_someone_who_does_not_ignore_them(): void
     {
         $this->assertTrue($this->canMessage(2, 4));
+    }
+
+    #[Test]
+    public function listing_users_checks_who_ignores_the_viewer_once_not_per_user(): void
+    {
+        $this->prepareDatabase(['group_permission' => [
+            ['group_id' => Group::MEMBER_ID, 'permission' => 'searchUsers'],
+        ]]);
+
+        $this->app();
+        $db = $this->database();
+        $db->enableQueryLog();
+
+        $response = $this->send($this->request('GET', '/api/users', ['authenticatedAs' => 2]));
+
+        $ignoreTableReads = array_filter($db->getQueryLog(), fn (array $query) => str_contains($query['query'], 'ignored_user'));
+        $db->disableQueryLog();
+
+        $this->assertEquals(200, $response->getStatusCode(), (string) $response->getBody());
+        // Whom the viewer ignores (the `ignored` flag), and who ignores the viewer (`canMessage`).
+        $this->assertCount(2, $ignoreTableReads);
     }
 }

@@ -14,6 +14,7 @@ namespace FoF\IgnoreUsers\Tests\unit\Access;
 use Flarum\User\User;
 use FoF\IgnoreUsers\Access\UserPolicy;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Support\Collection;
 use Mockery as m;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
@@ -29,47 +30,53 @@ class UserPolicyTest extends TestCase
         return $user;
     }
 
-    private function recipientIgnoring(bool $ignores): User
+    /**
+     * An actor (2) who is ignored by the given users; the ids stand in for the ignore table.
+     *
+     * @param int[] $ignoredBy
+     */
+    private function actorIgnoredBy(array $ignoredBy, bool $exempt = false): User
     {
-        $recipient = $this->user(3);
+        $actor = $this->user(2, $exempt);
 
         $relation = m::mock(BelongsToMany::class);
-        $relation->shouldReceive('where')->with('ignored_user_id', 2)->andReturnSelf();
-        $relation->shouldReceive('exists')->andReturn($ignores);
-        $recipient->shouldReceive('ignoredUsers')->andReturn($relation);
+        $relation->shouldReceive('allRelatedIds')->andReturn(new Collection($ignoredBy));
+        $actor->shouldReceive('ignoredBy')->andReturn($relation);
 
-        return $recipient;
+        return $actor;
     }
 
     #[Test]
-    public function denies_when_the_recipient_ignores_the_actor(): void
+    public function denies_direct_messages_to_a_user_who_ignores_the_actor(): void
     {
-        $policy = new UserPolicy();
-
-        $this->assertSame(
-            UserPolicy::DENY,
-            $policy->sendDirectMessage($this->user(2), $this->recipientIgnoring(true))
-        );
+        $this->assertSame(UserPolicy::DENY, (new UserPolicy())->sendDirectMessage($this->actorIgnoredBy([3]), $this->user(3)));
     }
 
     #[Test]
-    public function allows_when_the_recipient_does_not_ignore_the_actor(): void
+    public function allows_direct_messages_to_a_user_who_does_not_ignore_the_actor(): void
     {
-        $policy = new UserPolicy();
-
-        $this->assertSame(
-            UserPolicy::ALLOW,
-            $policy->sendDirectMessage($this->user(2), $this->recipientIgnoring(false))
-        );
+        $this->assertSame(UserPolicy::ALLOW, (new UserPolicy())->sendDirectMessage($this->actorIgnoredBy([4]), $this->user(3)));
     }
 
     #[Test]
-    public function allows_an_actor_who_cannot_be_ignored_without_querying(): void
+    public function an_actor_who_cannot_be_ignored_is_allowed_without_reading_the_ignore_table(): void
     {
-        $recipient = $this->user(3);
-        $recipient->shouldNotReceive('ignoredUsers');
+        $actor = $this->user(2, true);
+        $actor->shouldNotReceive('ignoredBy');
 
-        $this->assertSame(UserPolicy::ALLOW, (new UserPolicy())->sendDirectMessage($this->user(2, true), $recipient));
+        $this->assertSame(UserPolicy::ALLOW, (new UserPolicy())->sendDirectMessage($actor, $this->user(3)));
+    }
+
+    #[Test]
+    public function tells_messages_the_actor_cannot_message_a_user_who_ignores_them(): void
+    {
+        $this->assertSame(UserPolicy::DENY, (new UserPolicy())->message($this->actorIgnoredBy([3]), $this->user(3)));
+    }
+
+    #[Test]
+    public function leaves_messages_to_decide_otherwise(): void
+    {
+        $this->assertNull((new UserPolicy())->message($this->actorIgnoredBy([]), $this->user(3)));
     }
 
     protected function tearDown(): void

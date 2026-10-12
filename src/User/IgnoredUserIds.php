@@ -15,8 +15,9 @@ use Flarum\User\User;
 use WeakMap;
 
 /**
- * Whom an actor ignores, read as ids from the ignore table once per actor
- * instance (in effect, once per request) rather than as whole users.
+ * Whom an actor ignores, and who ignores them, read as ids from the ignore
+ * table once per actor instance (in effect, once per request) rather than as
+ * whole users or one query per user.
  */
 class IgnoredUserIds
 {
@@ -27,9 +28,27 @@ class IgnoredUserIds
      */
     protected static ?WeakMap $ids = null;
 
+    /**
+     * @var WeakMap<User, array<int, true>>|null
+     */
+    protected static ?WeakMap $ignoredByIds = null;
+
     public static function contains(User $actor, User $user): bool
     {
         return isset(self::of($actor)[$user->id]);
+    }
+
+    /**
+     * Whether $user ignores $actor.
+     */
+    public static function isIgnoredBy(User $actor, User $user): bool
+    {
+        self::$ignoredByIds ??= new WeakMap();
+
+        /** @phpstan-ignore-next-line */
+        $ids = self::$ignoredByIds[$actor] ??= array_fill_keys($actor->ignoredBy()->allRelatedIds()->all(), true);
+
+        return isset($ids[$user->id]);
     }
 
     /**
