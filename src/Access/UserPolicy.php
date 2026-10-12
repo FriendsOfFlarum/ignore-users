@@ -54,4 +54,13 @@ class UserPolicy extends AbstractPolicy
         // Explicit allow: with no policy result Gate would fall back to a group permission named after the ability.
         return $this->allow();
     }
+
+    /**
+     * Asked by flarum/messages before anything reaches $user. Only ever denies,
+     * so messages' own rules decide everything else.
+     */
+    public function message(User $actor, User $user): ?string
+    {
+        return $this->sendDirectMessage($actor, $user) === $this->deny() ? $this->deny() : null;
+    }
 }

@@ -86,4 +86,25 @@ class DirectMessageTest extends IgnoreTestCase
         $after = $this->sendNewMessage(2, 4);
         $this->assertEquals(403, $after->getStatusCode(), (string) $after->getBody());
     }
+
+    private function canMessage(int $viewer, int $user): ?bool
+    {
+        $response = $this->send($this->request('GET', "/api/users/$user", ['authenticatedAs' => $viewer]));
+
+        $this->assertEquals(200, $response->getStatusCode(), (string) $response->getBody());
+
+        return json_decode((string) $response->getBody(), true)['data']['attributes']['canMessage'] ?? null;
+    }
+
+    #[Test]
+    public function the_viewer_cannot_message_someone_who_ignores_them(): void
+    {
+        $this->assertFalse($this->canMessage(2, 3));
+    }
+
+    #[Test]
+    public function the_viewer_can_message_someone_who_does_not_ignore_them(): void
+    {
+        $this->assertTrue($this->canMessage(2, 4));
+    }
 }
