@@ -58,4 +58,16 @@ class IgnoreListPrivacyTest extends IgnoreTestCase
         $this->assertEquals(200, $response->getStatusCode(), (string) $response->getBody());
         $this->assertCount(1, $ignoreListReads);
     }
+
+    #[Test]
+    public function the_forum_payload_still_includes_the_viewers_own_ignore_list(): void
+    {
+        $response = $this->send($this->request('GET', '/api', ['authenticatedAs' => 3]));
+
+        $body = json_decode((string) $response->getBody(), true);
+        $actor = array_values(array_filter($body['included'] ?? [], fn (array $resource) => $resource['type'] === 'users' && $resource['id'] === '3'))[0] ?? null;
+
+        $this->assertEquals(200, $response->getStatusCode(), (string) $response->getBody());
+        $this->assertEqualsCanonicalizing(['2', '5'], array_column($actor['relationships']['ignoredUsers']['data'] ?? [], 'id'));
+    }
 }
