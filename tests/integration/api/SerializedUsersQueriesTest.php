@@ -109,6 +109,21 @@ class SerializedUsersQueriesTest extends IgnoreTestCase
     }
 
     #[Test]
+    public function the_viewers_ignore_list_is_read_as_ids_not_whole_users(): void
+    {
+        $ignoreListReads = array_filter(
+            $this->listPostsWithEditors(2)['queries'],
+            fn (array $query) => str_contains($query['query'], 'ignored_user')
+        );
+
+        $this->assertNotEmpty($ignoreListReads);
+
+        foreach ($ignoreListReads as $query) {
+            $this->assertStringNotContainsStringIgnoringCase(' join ', $query['query'], 'Reading the ignore list joined in whole users.');
+        }
+    }
+
+    #[Test]
     public function a_guest_ignores_no_one_and_can_ignore_no_one(): void
     {
         $users = $this->listPostsWithEditors(null)['users'];
