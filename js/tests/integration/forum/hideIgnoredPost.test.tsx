@@ -1,4 +1,8 @@
+import { jest } from '@jest/globals';
 import app from 'flarum/forum/app';
+import UserControls from 'flarum/forum/utils/UserControls';
+import listItems from 'flarum/common/helpers/listItems';
+import type User from 'flarum/common/models/User';
 import CommentPost from 'flarum/forum/components/CommentPost';
 import type Post from 'flarum/common/models/Post';
 import mq from 'mithril-query';
@@ -66,4 +70,25 @@ it('reveals the post when the toggle is clicked', () => {
 
 it("leaves a deleted post's own toggle to core", () => {
   expect(render('3')).not.toHaveElement('.item-ignore-toggle');
+});
+
+it('collapses a post already on screen once the viewer ignores its author', () => {
+  const out = render('2');
+  expect(out).not.toHaveElement('.Post--hidden');
+
+  // Ignore the author from their user controls, as on their profile.
+  jest.spyOn(window, 'confirm').mockReturnValue(true);
+  jest.spyOn(app, 'request').mockResolvedValue({ data: { type: 'users', id: NOT_IGNORED, attributes: {} } } as never);
+  const author = app.store.getById<User>('users', NOT_IGNORED)!;
+  const controls = mq(<ul>{listItems(UserControls.controls(author, null).toArray())}</ul>);
+  Array.from(controls.rootEl.querySelectorAll('button'))
+    .find((button) => button.textContent!.trim() === 'Ignore')!
+    .click();
+
+  out.redraw();
+
+  expect(out).toHaveElement('.CommentPost.Post--hidden');
+
+  jest.restoreAllMocks();
+  author.pushAttributes({ ignored: false });
 });
