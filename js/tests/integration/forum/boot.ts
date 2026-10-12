@@ -14,7 +14,7 @@ export const CANNOT_BE_IGNORED = '5';
  * Boots the forum through the extension's real entry point, so its initializer
  * and extenders run exactly as they do in production.
  */
-export default function bootForum(options: { viewer?: string | null; resources?: any[] } = {}) {
+export default function bootForum(options: { viewer?: string | null; resources?: any[]; extensions?: Record<string, { extend: unknown[] }> } = {}) {
   const viewer = options.viewer === undefined ? VIEWER : options.viewer;
 
   bootstrapForum({
@@ -35,6 +35,6 @@ export default function bootForum(options: { viewer?: string | null; resources?:
 
   // Before booting, as in production, where the strings arrive with the page payload.
   loadTranslations();
-  app.bootExtensions({ 'fof-ignore-users': { extend } });
+  app.bootExtensions({ ...options.extensions, 'fof-ignore-users': { extend } } as any);
   app.boot();
 }

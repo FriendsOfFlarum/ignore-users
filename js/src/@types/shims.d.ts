@@ -5,5 +5,8 @@ declare module 'flarum/common/models/User' {
     ignored(): boolean;
     canBeIgnored(): boolean;
     ignoredUsers(): User[] | undefined;
+
+    /** From flarum/messages, when it is enabled. */
+    canSendAnyMessage(): boolean | undefined;
   }
 }
