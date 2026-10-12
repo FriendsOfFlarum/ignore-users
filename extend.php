@@ -51,6 +51,7 @@ return [
         ->fields(fn () => [
             Schema\Relationship\ToMany::make('ignoredUsers')
                 ->type('users')
+                ->visible(fn (User $user, Context $context) => $context->getActor()->is($user))
                 ->includable(),
 
             Schema\Boolean::make('ignored')
