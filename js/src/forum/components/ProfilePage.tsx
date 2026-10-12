@@ -4,7 +4,6 @@ import Button from 'flarum/common/components/Button';
 import Link from 'flarum/common/components/Link';
 import username from 'flarum/common/helpers/username';
 import UserPage from 'flarum/forum/components/UserPage';
-import Stream from 'flarum/common/utils/Stream';
 import Placeholder from 'flarum/common/components/Placeholder';
 import LoadingIndicator from 'flarum/common/components/LoadingIndicator';
 import extractText from 'flarum/common/utils/extractText';
@@ -19,12 +18,20 @@ export default class ProfilePage extends UserPage {
     super.oninit(vnode);
 
     this.loading = true;
-
-    this.ignoredUsers = app.session.user!.ignoredUsers() || [];
+    this.ignoredUsers = [];
 
     this.loadUser(app.session.user!.username());
 
-    this.loading = false;
+    // Loaded here rather than with every page, and fresh each time the page opens.
+    app.store
+      .find<User>('users', app.session.user!.id()!, { include: 'ignoredUsers' })
+      .then((user) => {
+        this.ignoredUsers = user.ignoredUsers() || [];
+      })
+      .finally(() => {
+        this.loading = false;
+        m.redraw();
+      });
   }
 
   content(): Mithril.Children {
@@ -51,7 +58,6 @@ export default class ProfilePage extends UserPage {
             if (confirm(extractText(app.translator.trans(`fof-ignore-users.forum.user_controls.unignore_confirmation`)))) {
               user.save({ ignored: false });
               this.ignoredUsers.splice(i, 1);
-              app.session.user!.ignoredUsers = Stream(this.ignoredUsers);
             }
           };
 
