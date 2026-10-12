@@ -111,9 +111,6 @@ return [
     (new Extend\SearchDriver(DatabaseSearchDriver::class))
         ->addFilter(UserSearcher::class, IgnoredFilter::class),
 
-    (new Extend\ApiResource(Resource\ForumResource::class))
-        ->endpoint('show', fn ($endpoint) => $endpoint->addDefaultInclude(['actor.ignoredUsers'])),
-
     (new Extend\Conditional())
         ->whenExtensionEnabled('flarum-messages', fn () => [
             (new Extend\Event())

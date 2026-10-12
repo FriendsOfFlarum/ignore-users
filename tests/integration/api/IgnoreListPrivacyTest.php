@@ -60,14 +60,26 @@ class IgnoreListPrivacyTest extends IgnoreTestCase
     }
 
     #[Test]
-    public function the_forum_payload_still_includes_the_viewers_own_ignore_list(): void
+    public function the_forum_payload_does_not_carry_the_viewers_ignore_list(): void
     {
         $response = $this->send($this->request('GET', '/api', ['authenticatedAs' => 3]));
 
         $body = json_decode((string) $response->getBody(), true);
-        $actor = array_values(array_filter($body['included'] ?? [], fn (array $resource) => $resource['type'] === 'users' && $resource['id'] === '3'))[0] ?? null;
+        $includedUsers = array_column(array_filter($body['included'] ?? [], fn (array $resource) => $resource['type'] === 'users'), 'id');
 
         $this->assertEquals(200, $response->getStatusCode(), (string) $response->getBody());
-        $this->assertEqualsCanonicalizing(['2', '5'], array_column($actor['relationships']['ignoredUsers']['data'] ?? [], 'id'));
+        $this->assertSame(['3'], array_values($includedUsers));
+    }
+
+    #[Test]
+    public function a_user_can_load_their_own_ignore_list(): void
+    {
+        $response = $this->send($this->request('GET', '/api/users/3', ['authenticatedAs' => 3])
+            ->withQueryParams(['include' => 'ignoredUsers']));
+
+        $body = json_decode((string) $response->getBody(), true);
+
+        $this->assertEquals(200, $response->getStatusCode(), (string) $response->getBody());
+        $this->assertEqualsCanonicalizing(['2', '5'], array_column($body['data']['relationships']['ignoredUsers']['data'] ?? [], 'id'));
     }
 }
