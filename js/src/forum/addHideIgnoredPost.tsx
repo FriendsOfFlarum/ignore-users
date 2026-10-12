@@ -1,3 +1,4 @@
+import app from 'flarum/forum/app';
 import { extend } from 'flarum/common/extend';
 import CommentPost from 'flarum/forum/components/CommentPost';
 import Button from 'flarum/common/components/Button';
@@ -24,7 +25,12 @@ export default function () {
 
     items.add(
       'ignore-toggle',
-      <Button className="Button Button--default Button--more" icon="fas fa-ellipsis-h" onclick={this.toggleContent.bind(this)} />
+      <Button
+        className="Button Button--default Button--more"
+        icon="fas fa-ellipsis-h"
+        aria-label={app.translator.trans('fof-ignore-users.forum.post.toggle_label')}
+        onclick={this.toggleContent.bind(this)}
+      />
     );
   });
 }
