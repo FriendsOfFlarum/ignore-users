@@ -32,7 +32,7 @@ class DirectMessageTest extends IgnoreTestCase
     {
         $response = $this->sendNewMessage(2, 3);
 
-        $this->assertEquals(403, $response->getStatusCode(), (string) $response->getBody());
+        $this->assertRecipientUnavailable($response, 'ignorer');
         $this->assertSame(0, Dialog::query()->count());
     }
 
@@ -84,8 +84,7 @@ class DirectMessageTest extends IgnoreTestCase
         $ignore = $this->setIgnored(4, 2, true);
         $this->assertEquals(200, $ignore->getStatusCode(), (string) $ignore->getBody());
 
-        $after = $this->sendNewMessage(2, 4);
-        $this->assertEquals(403, $after->getStatusCode(), (string) $after->getBody());
+        $this->assertRecipientUnavailable($this->sendNewMessage(2, 4), 'open');
     }
 
     private function canMessage(int $viewer, int $user): ?bool

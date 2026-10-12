@@ -140,8 +140,6 @@ class CannotBeIgnoredTest extends IgnoreTestCase
         $ignore = $this->setIgnored(5, 2, true);
         $this->assertEquals(200, $ignore->getStatusCode(), (string) $ignore->getBody());
 
-        $response = $this->sendNewMessage(2, 5);
-
-        $this->assertEquals(403, $response->getStatusCode(), (string) $response->getBody());
+        $this->assertRecipientUnavailable($this->sendNewMessage(2, 5), 'exempt');
     }
 }
