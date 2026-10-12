@@ -129,4 +129,33 @@ class DirectMessageTest extends IgnoreTestCase
         // Whom the viewer ignores (the `ignored` flag), and who ignores the viewer (`canMessage`).
         $this->assertCount(2, $ignoreTableReads);
     }
+
+    private function canSendInConversationWith3(int $viewer): ?bool
+    {
+        $this->prepareDatabase([
+            Dialog::class => [['id' => 1, 'type' => 'direct']],
+            'dialog_user' => [
+                ['dialog_id' => 1, 'user_id' => 2, 'joined_at' => '2026-01-01 00:00:00'],
+                ['dialog_id' => 1, 'user_id' => 3, 'joined_at' => '2026-01-01 00:00:00'],
+            ],
+        ]);
+
+        $response = $this->send($this->request('GET', '/api/dialogs/1', ['authenticatedAs' => $viewer]));
+
+        $this->assertEquals(200, $response->getStatusCode(), (string) $response->getBody());
+
+        return json_decode((string) $response->getBody(), true)['data']['attributes']['canSendMessage'] ?? null;
+    }
+
+    #[Test]
+    public function an_existing_conversation_offers_no_reply_to_someone_now_ignored(): void
+    {
+        $this->assertFalse($this->canSendInConversationWith3(2));
+    }
+
+    #[Test]
+    public function the_user_doing_the_ignoring_can_still_reply(): void
+    {
+        $this->assertTrue($this->canSendInConversationWith3(3));
+    }
 }
