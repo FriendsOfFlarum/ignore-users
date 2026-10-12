@@ -38,14 +38,15 @@ Ignoring is one-directional. If you ignore someone, you can still message them.
 
 The extension integrates with both direct messaging extensions. Each integration only applies when that extension is installed and enabled; neither is required.
 
-| Extension | What is blocked |
-| --- | --- |
-| [`flarum/messages`](https://docs.flarum.org/extensions/messages) | Starting a new conversation with someone who ignores you, and sending further messages in an existing conversation with them. |
-| [`fof/byobu`](https://github.com/FriendsOfFlarum/byobu) | Starting a private discussion that includes someone who ignores you, and adding them to an existing private discussion. |
+**[`flarum/messages`](https://docs.flarum.org/extensions/messages)** treats someone who ignores you as a person you can't message:
 
-The blocked user receives a "permission denied" error. In Byobu, only newly added recipients are checked, so private discussions that already include someone who later ignores a participant are left alone.
+- the **Send a message** button doesn't appear on their profile, and they can't be picked as a recipient;
+- in an existing conversation with them, the reply box is replaced by "You can't send messages in this conversation.";
+- a message sent anyway is refused with messages' own "{username} can't receive messages." — the same wording it uses for any account that can't be messaged, so it doesn't say why.
 
-Both integrations use a single permission check, `sendDirectMessage`, so other extensions can ask the same question with `$actor->can('sendDirectMessage', $recipient)`.
+**[`fof/byobu`](https://github.com/FriendsOfFlarum/byobu)** refuses to start a private discussion that includes someone who ignores you, or to add them to an existing one, with a "permission denied" error. Only newly added recipients are checked, so private discussions that already include someone who later ignores a participant are left alone.
+
+For other extensions, `$actor->can('sendDirectMessage', $recipient)` asks the same question.
 
 ### Users who cannot be ignored
 
