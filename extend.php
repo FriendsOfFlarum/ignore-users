@@ -23,6 +23,7 @@ use Flarum\User\Search\UserSearcher;
 use Flarum\User\User;
 use FoF\IgnoreUsers\Event\Ignoring;
 use FoF\IgnoreUsers\Event\Unignoring;
+use FoF\IgnoreUsers\User\IgnoredUserIds;
 use FoF\IgnoreUsers\User\Search\Filter\IgnoredFilter;
 use Illuminate\Contracts\Events\Dispatcher;
 
@@ -57,8 +58,7 @@ return [
             Schema\Boolean::make('ignored')
                 ->get(function (User $user, Context $context) {
                     // Only a user the actor ignores needs their permissions checked.
-                    /** @phpstan-ignore-next-line */
-                    if (!$context->getActor()->ignoredUsers->contains($user)) {
+                    if (!IgnoredUserIds::contains($context->getActor(), $user)) {
                         return false;
                     }
 
@@ -88,7 +88,7 @@ return [
                     }
 
                     if ($changed) {
-                        $actor->load('ignoredUsers');
+                        IgnoredUserIds::forget($actor);
                     }
                 }),
 
