@@ -103,10 +103,7 @@ return [
 
                     return Api\UserPermissionBuffer::defer($user, fn () => $actor->can('ignore', $user));
                 }),
-        ])
-        ->endpoint(['index', 'show'], function ($endpoint) {
-            return $endpoint->addDefaultInclude(['ignoredUsers']);
-        }),
+        ]),
 
     (new Extend\Policy())
         ->modelPolicy(User::class, Access\UserPolicy::class),
