@@ -3,6 +3,7 @@ import addIgnoreUserControlButton from './addIgnoreUserControlButton';
 import addHideIgnoredPost from './addHideIgnoredPost';
 import addProfilePage from './addProfilePage';
 import addIgnoredUserBadge from './addIgnoredUserBadge';
+import addCannotSendNote from './addCannotSendNote';
 
 export { default as extend } from './extend';
 
@@ -11,4 +12,5 @@ app.initializers.add('fof-ignore-users', function () {
   addHideIgnoredPost();
   addProfilePage();
   addIgnoredUserBadge();
+  addCannotSendNote();
 });

@@ -76,6 +76,21 @@ abstract class IgnoreTestCase extends TestCase
         ]));
     }
 
+    /**
+     * flarum/messages refusing a recipient nobody may write to. It doesn't say
+     * why, so being ignored looks the same as an account that can't be messaged.
+     */
+    protected function assertRecipientUnavailable(ResponseInterface $response, string $username): void
+    {
+        $this->assertEquals(422, $response->getStatusCode(), (string) $response->getBody());
+
+        $error = json_decode((string) $response->getBody(), true)['errors'][0] ?? [];
+
+        $this->assertSame('/data/attributes/users', $error['source']['pointer'] ?? null);
+        // The test install can't cache compiled translations, so the message may arrive as its key.
+        $this->assertContains($error['detail'] ?? null, ["$username can't receive messages.", 'flarum-messages.lib.recipient_unavailable_message']);
+    }
+
     protected function setIgnored(int $actor, int $target, bool $ignored): ResponseInterface
     {
         return $this->send($this->request('PATCH', "/api/users/$target", [

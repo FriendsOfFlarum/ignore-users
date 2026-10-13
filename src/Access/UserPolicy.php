@@ -13,6 +13,7 @@ namespace FoF\IgnoreUsers\Access;
 
 use Flarum\User\Access\AbstractPolicy;
 use Flarum\User\User;
+use FoF\IgnoreUsers\User\IgnoredUserIds;
 
 class UserPolicy extends AbstractPolicy
 {
@@ -38,20 +39,30 @@ class UserPolicy extends AbstractPolicy
 
     /**
      * Whether $actor may start or continue a direct message with $recipient.
-     * Users holding `notBeIgnored` (e.g. staff) are exempt, mirroring `ignore()`.
      */
     public function sendDirectMessage(User $actor, User $recipient): string|bool|null
     {
-        if ($actor->id === $recipient->id || $actor->hasPermission('notBeIgnored')) {
-            return $this->allow();
-        }
-
-        /** @phpstan-ignore-next-line */
-        if ($recipient->ignoredUsers()->where('ignored_user_id', $actor->id)->exists()) {
-            return $this->deny();
-        }
-
         // Explicit allow: with no policy result Gate would fall back to a group permission named after the ability.
-        return $this->allow();
+        return $this->isIgnoredBy($actor, $recipient) ? $this->deny() : $this->allow();
+    }
+
+    /**
+     * Asked by flarum/messages before anything reaches $user. Only ever denies,
+     * so messages' own rules decide everything else.
+     */
+    public function message(User $actor, User $user): ?string
+    {
+        return $this->isIgnoredBy($actor, $user) ? $this->deny() : null;
+    }
+
+    /**
+     * Whether $user ignores $actor. Users holding `notBeIgnored` (e.g. staff)
+     * are exempt, mirroring `ignore()`.
+     */
+    protected function isIgnoredBy(User $actor, User $user): bool
+    {
+        return $actor->id !== $user->id
+            && !$actor->hasPermission('notBeIgnored')
+            && IgnoredUserIds::isIgnoredBy($actor, $user);
     }
 }

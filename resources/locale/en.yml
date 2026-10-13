@@ -27,6 +27,9 @@ fof-ignore-users:
     post:
       toggle_label: Show or hide post from ignored user
 
+    messages:
+      cannot_send_text: You can't send messages in this conversation.
+
     badge:
       user_label: Ignored user
       discussion_label: Started by an ignored user

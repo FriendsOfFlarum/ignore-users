@@ -13,6 +13,9 @@
       ],
       "@flarum/*": [
         "../vendor/flarum/core/js/dist-typings/*"
+      ],
+      "ext:flarum/messages/*": [
+        "../vendor/flarum/messages/js/dist-typings/*"
       ]
     }
   }
