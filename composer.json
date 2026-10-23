@@ -66,7 +66,8 @@
         "flarum/testing": "^2.0.0",
         "fof/byobu": "^2.0.0",
         "fof/split": "^2.0.0",
-        "flarum/messages": "*"
+        "flarum/messages": "*",
+        "flarum/flags": "*"
     },
     "autoload-dev": {
         "psr-4": {
